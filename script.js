@@ -1,15 +1,15 @@
-let money = 0;
+let money = 10;
 let storageCapacity = 1.44;
 let storageUsed = 0;
 let internetSpeed = 0.02;
 let storageType = 'Floppy Disk';
 
 const items = [
-    { name: 'Junk', baseSize: 0.1, level: 1, unlocked: true, multiplier: 1 },
-    { name: 'Single-bit file', baseSize: 1, level: 1, unlocked: false, multiplier: 10 },
-    { name: 'Metadata fragment', baseSize: 15, level: 1, unlocked: false, multiplier: 2 },
-    { name: 'Broken shortcut', baseSize: 30, level: 1, unlocked: false, multiplier: 5 },
-    { name: 'Pixel sample', baseSize: 60, level: 1, unlocked: false, multiplier: 3 }
+    { name: 'Junk', baseSize: 0.1, level: 1, unlocked: true, multiplier: 1, downloading: false },
+    { name: 'Single-bit file', baseSize: 1, level: 1, unlocked: false, multiplier: 10, downloading: false },
+    { name: 'Metadata fragment', baseSize: 15, level: 1, unlocked: false, multiplier: 2, downloading: false },
+    { name: 'Broken shortcut', baseSize: 30, level: 1, unlocked: false, multiplier: 5, downloading: false },
+    { name: 'Pixel sample', baseSize: 60, level: 1, unlocked: false, multiplier: 3, downloading: false }
 ];
 
 const storageTypes = [
@@ -85,6 +85,35 @@ function renderStorage() {
             <button onclick="sellItem(${index})">Sell ($${(item.size * item.multiplier).toFixed(2)})</button>
         `;
         storageDiv.appendChild(div);
+        });
+}
+
+function renderDownloads() {
+    const downloadsDiv = document.getElementById('downloads');
+    downloadsDiv.innerHTML = '';
+
+    items.forEach((item, index) => {
+        if (item.unlocked) {
+            const size = item.baseSize * item.level;
+            const time = size / internetSpeed;
+
+            const div = document.createElement('div');
+            div.className = 'item';
+
+            div.innerHTML = `
+                <p>${item.name} (Level ${item.level})</p>
+                <p>Size: ${size.toFixed(4)} MB</p>
+                <button 
+                    onclick="downloadItem(${index})" 
+                    ${item.downloading ? 'disabled' : ''}
+                >
+                    ${item.downloading ? 'Downloading...' : `Download (${time.toFixed(1)}s)`}
+                </button>
+                <button onclick="upgradeItem(${index})">Upgrade ($${(item.level * 1).toFixed(2)})</button>
+            `;
+
+            downloadsDiv.appendChild(div);
+        }
     });
 }
 
@@ -117,21 +146,33 @@ function renderUpgrades() {
 
 function downloadItem(index) {
     const item = items[index];
+
+    if (item.downloading) return; // already downloading
+
     const size = item.baseSize * item.level;
+
     if (storageUsed + size > storageCapacity) {
         alert('Not enough storage space!');
         return;
     }
+
     const time = size / internetSpeed;
-    const button = event.target;
-    button.disabled = true;
-    button.textContent = 'Downloading...';
+
+    item.downloading = true;
+    updateDisplay(); // re-render immediately
+
     setTimeout(() => {
-        storageItems.push({ name: item.name, size: size, level: item.level, multiplier: item.multiplier });
+        storageItems.push({
+            name: item.name,
+            size: size,
+            level: item.level,
+            multiplier: item.multiplier
+        });
+
         storageUsed += size;
+        item.downloading = false;
+
         updateDisplay();
-        button.disabled = false;
-        button.textContent = `Download (${time.toFixed(1)}s)`;
     }, time * 1000);
 }
 
@@ -145,7 +186,7 @@ function sellItem(index) {
 
 function upgradeItem(index) {
     const item = items[index];
-    const cost = item.level * 1;
+
     if (money >= cost) {
         money -= cost;
         item.level++;
