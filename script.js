@@ -58,7 +58,7 @@ function renderDownloads() {
     downloadsDiv.innerHTML = '';
     items.forEach((item, index) => {
         if (item.unlocked) {
-            const size = item.baseSize * item.level;
+            const size = item.baseSize * Math.pow(1.2, item.level - 1);
             const time = size / internetSpeed;
             const div = document.createElement('div');
             div.className = 'item';
@@ -82,7 +82,7 @@ function renderStorage() {
         div.innerHTML = `
             <p>${item.name} (Level ${item.level})</p>
             <p>Size: ${item.size.toFixed(3)} MB</p>
-            <button onclick="sellItem(${index})">Sell ($${(item.size * item.multiplier).toFixed(2)})</button>
+            <button onclick="sellItem(${index})">Sell ($${(item.size * item.multiplier * 0.5).toFixed(2)})</button>
         `;
         storageDiv.appendChild(div);
         });
@@ -109,7 +109,7 @@ function renderDownloads() {
                 >
                     ${item.downloading ? 'Downloading...' : `Download (${time.toFixed(1)}s)`}
                 </button>
-                <button onclick="upgradeItem(${index})">Upgrade ($${(item.level * 1).toFixed(2)})</button>
+                <button onclick="upgradeItem(${index})">Upgrade ($${(Math.pow(1.5, item.level - 1)).toFixed(2)})</button>
             `;
 
             downloadsDiv.appendChild(div);
@@ -178,7 +178,7 @@ function downloadItem(index) {
 
 function sellItem(index) {
     const item = storageItems[index];
-    money += item.size * item.multiplier;
+    money += item.size * item.multiplier * 0.5;
     storageUsed -= item.size;
     storageItems.splice(index, 1);
     updateDisplay();
@@ -186,16 +186,19 @@ function sellItem(index) {
 
 function upgradeItem(index) {
     const item = items[index];
+
     const baseCost = 1;
     const growth = 1.5;
-
     const cost = baseCost * Math.pow(growth, item.level - 1);
+
     if (money >= cost) {
         money -= cost;
         item.level++;
+
         if (item.level >= 5 && index + 1 < items.length) {
             items[index + 1].unlocked = true;
         }
+
         updateDisplay();
     } else {
         alert('Not enough money!');
