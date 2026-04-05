@@ -5,11 +5,19 @@ let internetSpeed = 0.02;
 let storageType = 'Floppy Disk';
 
 const items = [
-    { name: 'Junk', baseSize: 0.1, level: 1, unlocked: true, multiplier: 1, downloading: false },
-    { name: 'Single-bit file', baseSize: 1, level: 1, unlocked: false, multiplier: 10, downloading: false },
-    { name: 'Metadata fragment', baseSize: 15, level: 1, unlocked: false, multiplier: 2, downloading: false },
-    { name: 'Broken shortcut', baseSize: 30, level: 1, unlocked: false, multiplier: 5, downloading: false },
-    { name: 'Pixel sample', baseSize: 60, level: 1, unlocked: false, multiplier: 3, downloading: false }
+    { name: 'Junk (empty .txt)', baseSize: 0.1, level: 1, unlocked: true, multiplier: 1, downloading: false, desc: 'Worth almost nothing… but hey, it’s better than nothing.' },
+    { name: 'Single-bit file', baseSize: 0.3, level: 1, unlocked: false, multiplier: 1.3, downloading: false, desc: 'Just a lonely 0 or 1, but rare enough to brag about.' },
+    { name: 'Game mods', baseSize: 1, level: 1, unlocked: false, multiplier: 1.6, downloading: false, desc: 'Tiny chaos waiting to be unleashed.' },
+    { name: 'Image File', baseSize: 3, level: 1, unlocked: false, multiplier: 2, downloading: false, desc: '' },
+    { name: 'Video File', baseSize: 12, level: 1, unlocked: false, multiplier: 2.5, downloading: false, desc: '' },
+    { name: 'HD Movie', baseSize: 48, level: 1, unlocked: false, multiplier: 3, downloading: false, desc: '' },
+    { name: 'Cs2 (60GB)', baseSize: 120, level: 1, unlocked: false, multiplier: 3.5, downloading: false, desc: '' },
+    { name: 'Government files', baseSize: 300, level: 1, unlocked: false, multiplier: 4.5, downloading: false, desc: 'Top secret, highly dangerous, incredibly valuable.' },
+    { name: 'Encryption keys', baseSize: 800, level: 1, unlocked: false, multiplier: 6, downloading: false, desc: 'Unlock everything… if you dare.' },
+    { name: 'AI models', baseSize: 2000, level: 1, unlocked: false, multiplier: 8, downloading: false, desc: 'Artificial minds ready for your command.' },
+    { name: 'Alien signals', baseSize: 6000, level: 1, unlocked: false, multiplier: 12, downloading: false, desc: 'Messages from somewhere, maybe not friendly.' },
+    { name: 'The Galaxy Archive', baseSize: 20000, level: 1, unlocked: false, multiplier: 20, downloading: false, desc: 'Star systems, civilizations, cosmic secrets… all yours.' },
+    { name: 'The BIG SECRET', baseSize: 100000, level: 1, unlocked: false, multiplier: 50, downloading: false, desc: 'The ultimate revelation, the plot twist, the thing they didn’t want you to see.' }
 ];
 
 const storageTypes = [
@@ -56,21 +64,79 @@ function updateDisplay() {
 function renderDownloads() {
     const downloadsDiv = document.getElementById('downloads');
     downloadsDiv.innerHTML = '';
+
     items.forEach((item, index) => {
         if (item.unlocked) {
             const size = item.baseSize * Math.pow(1.2, item.level - 1);
             const time = size / internetSpeed;
+
             const div = document.createElement('div');
             div.className = 'item';
+            div.style.position = 'relative';
+
             div.innerHTML = `
+                <button 
+                    onclick="toggleItemInfo(${index})"
+                    onmouseover="showItemInfo(${index})"
+                    onmouseout="hideItemInfo(${index})"
+                    style="position:absolute; font-size:12px; padding:2px 6px; top:5px; right:5px;"
+                >ℹ️</button>
+
                 <p>${item.name} (Level ${item.level})</p>
-                <p>Size: ${size.toFixed(4)} MB</p>
-                <button onclick="downloadItem(${index})">Download (${time.toFixed(1)}s)</button>
-                <button onclick="upgradeItem(${index})">Upgrade ($${ (item.level * 1).toFixed(2) })</button>
+                <p>Size: ${size.toFixed(2)} MB</p>
+
+                <button onclick="downloadItem(${index})" ${item.downloading ? 'disabled' : ''}>
+                    ${item.downloading ? 'Downloading...' : `Download (${time.toFixed(1)}s)`}
+                </button>
+
+                <button onclick="upgradeItem(${index})">
+                    Upgrade ($${(Math.pow(1.5, item.level - 1)).toFixed(2)})
+                </button>
+
+                <div id="info-${index}" 
+                     style="display:none; position:absolute; top:25px; right:5px; 
+                            background:#111; color:#fff; padding:6px; font-size:12px; 
+                            border:1px solid #444; max-width:200px; z-index:10;">
+                    ${item.desc || 'No info available.'}
+                </div>
             `;
+
             downloadsDiv.appendChild(div);
         }
     });
+}
+
+let pinnedInfoIndex = null;
+
+function toggleItemInfo(index) {
+    const el = document.getElementById(`info-${index}`);
+
+    if (pinnedInfoIndex !== null && pinnedInfoIndex !== index) {
+        const old = document.getElementById(`info-${pinnedInfoIndex}`);
+        if (old) old.style.display = 'none';
+    }
+
+    if (pinnedInfoIndex === index) {
+        el.style.display = 'none';
+        pinnedInfoIndex = null;
+    } else {
+        el.style.display = 'block';
+        pinnedInfoIndex = index;
+    }
+}
+
+function showItemInfo(index) {
+    if (pinnedInfoIndex !== index) {
+        const el = document.getElementById(`info-${index}`);
+        if (el) el.style.display = 'block';
+    }
+}
+
+function hideItemInfo(index) {
+    if (pinnedInfoIndex !== index) {
+        const el = document.getElementById(`info-${index}`);
+        if (el) el.style.display = 'none';
+    }
 }
 
 function renderStorage() {
@@ -86,35 +152,6 @@ function renderStorage() {
         `;
         storageDiv.appendChild(div);
         });
-}
-
-function renderDownloads() {
-    const downloadsDiv = document.getElementById('downloads');
-    downloadsDiv.innerHTML = '';
-
-    items.forEach((item, index) => {
-        if (item.unlocked) {
-            const size = item.baseSize * item.level;
-            const time = size / internetSpeed;
-
-            const div = document.createElement('div');
-            div.className = 'item';
-
-            div.innerHTML = `
-                <p>${item.name} (Level ${item.level})</p>
-                <p>Size: ${size.toFixed(4)} MB</p>
-                <button 
-                    onclick="downloadItem(${index})" 
-                    ${item.downloading ? 'disabled' : ''}
-                >
-                    ${item.downloading ? 'Downloading...' : `Download (${time.toFixed(1)}s)`}
-                </button>
-                <button onclick="upgradeItem(${index})">Upgrade ($${(Math.pow(1.5, item.level - 1)).toFixed(2)})</button>
-            `;
-
-            downloadsDiv.appendChild(div);
-        }
-    });
 }
 
 function renderUpgrades() {
@@ -147,7 +184,7 @@ function renderUpgrades() {
 function downloadItem(index) {
     const item = items[index];
 
-    if (item.downloading) return; // already downloading
+    if (item.downloading) return;
 
     const size = item.baseSize * item.level;
 
@@ -159,7 +196,7 @@ function downloadItem(index) {
     const time = size / internetSpeed;
 
     item.downloading = true;
-    updateDisplay(); // re-render immediately
+    updateDisplay();
 
     setTimeout(() => {
         storageItems.push({
