@@ -1,12 +1,12 @@
-let money = 10;
+let money = 0;
 let storageCapacity = 1.44;
 let storageUsed = 0;
-let internetSpeed = 0.002;
+let internetSpeed = 0.02;
 let storageType = 'Floppy Disk';
 
 const items = [
-    { name: 'Junk', baseSize: 0.01, level: 1, unlocked: true, multiplier: 1 },
-    { name: 'Single-bit file', baseSize: 0.1, level: 1, unlocked: false, multiplier: 10 },
+    { name: 'Junk', baseSize: 0.1, level: 1, unlocked: true, multiplier: 1 },
+    { name: 'Single-bit file', baseSize: 1, level: 1, unlocked: false, multiplier: 10 },
     { name: 'Metadata fragment', baseSize: 1, level: 1, unlocked: false, multiplier: 2 },
     { name: 'Broken shortcut', baseSize: 5, level: 1, unlocked: false, multiplier: 5 },
     { name: 'Pixel sample', baseSize: 30, level: 1, unlocked: false, multiplier: 3 }
@@ -18,19 +18,18 @@ const storageTypes = [
 ];
 
 const internetSpeeds = [
-    { level: 1, speed: 0.001, cost: 0 },
-    { level: 2, speed: 0.01, cost: 0.02 },
-    { level: 3, speed: 0.05, cost: 0.05 },
-    { level: 4, speed: 0.2, cost: 0.5 },
-    { level: 5, speed: 1, cost: 10 },
-    { level: 6, speed: 5, cost: 100 },
-    { level: 7, speed: 20, cost: 500 },
-    { level: 8, speed: 100, cost: 0.05 },
-    { level: 9, speed: 500, cost: 10 },
-    { level: 10, speed: 1000, cost: 0.1 },
-    { level: 11, speed: 10000, cost: 0.05 },
-    { level: 12, speed: 100000, cost: 10 },
-    { level: 13, speed: 1000000, cost: 0 },
+    { level: 1, speed: 0.02, cost: 0.02 },
+    { level: 2, speed: 0.05, cost: 0.5 },
+    { level: 3, speed: 0.1, cost: 1 },
+    { level: 4, speed: 0.5, cost: 10 },
+    { level: 5, speed: 5, cost: 100 },
+    { level: 6, speed: 20, cost: 500 },
+    { level: 7, speed: 100, cost: 0.05 },
+    { level: 8, speed: 500, cost: 10 },
+    { level: 9, speed: 1000, cost: 0.1 },
+    { level: 10, speed: 10000, cost: 0.05 },
+    { level: 11, speed: 100000, cost: 10 },
+    { level: 12, speed: 1000000, cost: 0 },
 
 ];
 
@@ -141,7 +140,7 @@ function sellItem(index) {
 
 function upgradeItem(index) {
     const item = items[index];
-    const cost = item.level * 0.1;
+    const cost = item.level * 1;
     if (money >= cost) {
         money -= cost;
         item.level++;
