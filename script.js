@@ -186,7 +186,10 @@ function sellItem(index) {
 
 function upgradeItem(index) {
     const item = items[index];
+    const baseCost = 1;
+    const growth = 1.5;
 
+    const cost = baseCost * Math.pow(growth, item.level - 1);
     if (money >= cost) {
         money -= cost;
         item.level++;
