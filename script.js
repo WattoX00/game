@@ -7,14 +7,20 @@ let storageType = 'Floppy Disk';
 const items = [
     { name: 'Junk', baseSize: 0.1, level: 1, unlocked: true, multiplier: 1 },
     { name: 'Single-bit file', baseSize: 1, level: 1, unlocked: false, multiplier: 10 },
-    { name: 'Metadata fragment', baseSize: 1, level: 1, unlocked: false, multiplier: 2 },
-    { name: 'Broken shortcut', baseSize: 5, level: 1, unlocked: false, multiplier: 5 },
-    { name: 'Pixel sample', baseSize: 30, level: 1, unlocked: false, multiplier: 3 }
+    { name: 'Metadata fragment', baseSize: 15, level: 1, unlocked: false, multiplier: 2 },
+    { name: 'Broken shortcut', baseSize: 30, level: 1, unlocked: false, multiplier: 5 },
+    { name: 'Pixel sample', baseSize: 60, level: 1, unlocked: false, multiplier: 3 }
 ];
 
 const storageTypes = [
     { name: 'Floppy Disk', capacity: 1.44 },
     { name: 'CD-ROM', capacity: 700 },
+    { name: 'DVD', capacity: 4700 },
+    { name: 'Hard Disk Drive (HDD)', capacity: 8192 },
+    { name: 'Solid State Drive (SSD)', capacity: 16384 },
+    { name: 'NVMe SSD', capacity: 65536 },
+    { name: 'Neural Vault', capacity: 524288 },
+    { name: 'Galaxy Archive Disk', capacity: 10485760 },
 ];
 
 const internetSpeeds = [
@@ -24,13 +30,12 @@ const internetSpeeds = [
     { level: 4, speed: 0.5, cost: 10 },
     { level: 5, speed: 5, cost: 100 },
     { level: 6, speed: 20, cost: 500 },
-    { level: 7, speed: 100, cost: 0.05 },
-    { level: 8, speed: 500, cost: 10 },
-    { level: 9, speed: 1000, cost: 0.1 },
-    { level: 10, speed: 10000, cost: 0.05 },
-    { level: 11, speed: 100000, cost: 10 },
-    { level: 12, speed: 1000000, cost: 0 },
-
+    { level: 7, speed: 100, cost: 2000 },
+    { level: 8, speed: 500, cost: 5000 },
+    { level: 9, speed: 1000, cost: 10000 },
+    { level: 10, speed: 10000, cost: 100000 },
+    { level: 11, speed: 100000, cost: 1000000 },
+    { level: 12, speed: 1000000, cost: 10000000 },
 ];
 
 let currentInternetLevel = 1;
