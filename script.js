@@ -1,4 +1,4 @@
-let money = 10;
+let money = 100000;
 let storageCapacity = 1.44;
 let storageUsed = 0;
 let internetSpeed = 0.02;
@@ -51,6 +51,14 @@ let currentStorageIndex = 0;
 
 const storageItems = [];
 
+let blackMarketUnlocked = false;
+let blackMarketMultiplier = 2.0;
+let boostedItemIndex = null;
+let previousBoostedItem = null;
+let boostTimer = null;
+let countdownInterval = null;
+let boostStartTime = 0;
+
 function updateDisplay() {
     document.getElementById('money').textContent = `Money: $${money.toFixed(2)}`;
     document.getElementById('storage-info').textContent = `Storage: ${storageType} (${storageCapacity} MB used: ${storageUsed.toFixed(2)} MB)`;
@@ -59,6 +67,7 @@ function updateDisplay() {
     renderDownloads();
     renderStorage();
     renderUpgrades();
+    renderBlackMarket();
 }
 
 function renderDownloads() {
@@ -179,6 +188,35 @@ function renderUpgrades() {
         `;
         upgradesDiv.appendChild(div);
     }
+
+    if (blackMarketUnlocked) {
+        const cost = Math.pow(2, Math.floor((blackMarketMultiplier - 2) / 0.1)) * 100;
+        const div = document.createElement('div');
+        div.className = 'upgrade';
+        div.innerHTML = `
+            <p>Upgrade Black Market Multiplier to ${(blackMarketMultiplier + 0.1).toFixed(1)}x</p>
+            <button onclick="upgradeBlackMarket()">Buy ($${cost.toFixed(2)})</button>
+        `;
+        upgradesDiv.appendChild(div);
+    }
+}
+
+function renderBlackMarket() {
+    const bmDiv = document.getElementById('black-market');
+    if (!blackMarketUnlocked) {
+        bmDiv.innerHTML = '';
+        return;
+    }
+
+    const boostedName = boostedItemIndex !== null ? items[boostedItemIndex].name : 'None';
+    const timeLeft = Math.max(0, 30000 - (Date.now() - boostStartTime));
+    const minutes = Math.floor(timeLeft / 60000);
+    const seconds = Math.floor((timeLeft % 60000) / 1000);
+
+    bmDiv.innerHTML = `
+        <p>Current Boost: ${boostedName} (${blackMarketMultiplier}x)</p>
+        <p>Next boost in: ${minutes}:${seconds.toString().padStart(2, '0')}</p>
+    `;
 }
 
 function downloadItem(index) {
@@ -215,7 +253,11 @@ function downloadItem(index) {
 
 function sellItem(index) {
     const item = storageItems[index];
-    money += item.size * item.multiplier * 0.5;
+    let sellPrice = item.size * item.multiplier * 0.5;
+    if (boostedItemIndex !== null && item.name === items[boostedItemIndex].name) {
+        sellPrice *= blackMarketMultiplier;
+    }
+    money += sellPrice;
     storageUsed -= item.size;
     storageItems.splice(index, 1);
     updateDisplay();
@@ -234,6 +276,10 @@ function upgradeItem(index) {
 
         if (item.level >= 5 && index + 1 < items.length) {
             items[index + 1].unlocked = true;
+            if (index + 1 === 3) {
+                blackMarketUnlocked = true;
+                startBlackMarket();
+            }
         }
 
         updateDisplay();
@@ -261,6 +307,46 @@ function upgradeStorage() {
         currentStorageIndex++;
         storageType = next.name;
         storageCapacity = next.capacity;
+        updateDisplay();
+    } else {
+        alert('Not enough money!');
+    }
+}
+
+function startBlackMarket() {
+    selectRandomBoost();
+    boostTimer = setInterval(() => {
+        resetBoost();
+        selectRandomBoost();
+    }, 300000); // 5 minutes
+    countdownInterval = setInterval(() => {
+        renderBlackMarket();
+    }, 1000);
+}
+
+function resetBoost() {
+    boostedItemIndex = null;
+}
+
+function selectRandomBoost() {
+    const availableItems = items.filter(item => item.unlocked);
+    if (availableItems.length === 0) return;
+
+    let newItem;
+    do {
+        newItem = availableItems[Math.floor(Math.random() * availableItems.length)];
+    } while (newItem === previousBoostedItem && availableItems.length > 1);
+
+    boostedItemIndex = items.indexOf(newItem);
+    previousBoostedItem = newItem;
+    boostStartTime = Date.now();
+}
+
+function upgradeBlackMarket() {
+    const cost = Math.pow(2, Math.floor((blackMarketMultiplier - 2) / 0.1)) * 100;
+    if (money >= cost) {
+        money -= cost;
+        blackMarketMultiplier += 0.1;
         updateDisplay();
     } else {
         alert('Not enough money!');
