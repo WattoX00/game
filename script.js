@@ -15,6 +15,8 @@ const actionIcons = {
 
 const uiIcons = {
     internet: 'assets/internet.png',
+    info: 'assets/information.png',
+    printer: 'assets/printer.png',
     lvl1: 'assets/storagelvl1.png',
     lvl2: 'assets/storagelvl2.png',
     lvl3: 'assets/storagelvl3.png',
@@ -215,7 +217,7 @@ function renderDownloads() {
                     onmouseover="showItemInfo(${index})"
                     onmouseout="hideItemInfo(${index})"
                     style="position:absolute; font-size:12px; padding:2px 6px; top:5px; right:5px;"
-                >ℹ️</button>
+                ><img src="${uiIcons.info}" style="width:16px;height:16px;"></button>
 
                 <img src="${item.img}" alt="${item.name}" style="width:40px;height:40px;margin-right:6px;vertical-align:middle;">
                 <p>${item.name} (Level ${item.level})</p>
@@ -330,7 +332,7 @@ function renderStorage() {
         let buttons = `<button onclick="sellItem(${index})">${price.toFixed(2)} <img src="${actionIcons.sell}" style="width:32px;height:32px;"></button>`;
 
         if (printerUnlocked) {
-            buttons += ` <button onclick="startPrintFromStorage(${index})">Print</button>`;
+            buttons += ` <button onclick="startPrintFromStorage(${index})"><img src="${uiIcons.printer}" style="width:32px;height:32px;"></button>`;
         }
 
         if (autobuyerBought) {
@@ -460,7 +462,7 @@ function renderPrinter() {
     } else {
         const queued = autobuyerBought && autobuyerQueueName ? autobuyerQueueName : 'None';
         let html = '';
-        html += `<p>Printer idle.</p>`;
+        html += `<img src="${uiIcons.printer}" style="width:32px;height:32px;">`;
         html += `<p>Print Duration: ${getPrintDuration()}s</p>`;
         html += `<p>Autobuyer Queue: ${queued}</p>`;
         if (autosellerBought) {
