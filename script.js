@@ -7,20 +7,26 @@ let currentBulkQuantity = 1;
 const bulkOptions = [1,5,10,25];
 let reservedStorage = 0;
 
+const actionIcons = {
+    sell: 'assets/sell.png',
+    levelup: 'assets/levelup.png',
+    download: 'assets/download.png'
+};
+
 const items = [
-    { name: 'Junk (empty .txt)', baseSize: 0.1, level: 1, unlocked: true, multiplier: 1, downloading: false, desc: 'Worth almost nothing… but hey, it’s better than nothing.' },
-    { name: 'Single-bit file', baseSize: 0.3, level: 1, unlocked: false, multiplier: 1.3, downloading: false, desc: 'Just a lonely 0 or 1, but rare enough to brag about.' },
-    { name: 'Game mods', baseSize: 1, level: 1, unlocked: false, multiplier: 1.6, downloading: false, desc: 'Tiny chaos waiting to be unleashed.' },
-    { name: 'Image File', baseSize: 3, level: 1, unlocked: false, multiplier: 2, downloading: false, desc: '' },
-    { name: 'Video File', baseSize: 12, level: 1, unlocked: false, multiplier: 2.5, downloading: false, desc: '' },
-    { name: 'HD Movie', baseSize: 48, level: 1, unlocked: false, multiplier: 3, downloading: false, desc: '' },
-    { name: 'Cs2 (60GB)', baseSize: 120, level: 1, unlocked: false, multiplier: 3.5, downloading: false, desc: '' },
-    { name: 'Government files', baseSize: 300, level: 1, unlocked: false, multiplier: 4.5, downloading: false, desc: 'Top secret, highly dangerous, incredibly valuable.' },
-    { name: 'Encryption keys', baseSize: 800, level: 1, unlocked: false, multiplier: 6, downloading: false, desc: 'Unlock everything… if you dare.' },
-    { name: 'AI models', baseSize: 2000, level: 1, unlocked: false, multiplier: 8, downloading: false, desc: 'Artificial minds ready for your command.' },
-    { name: 'Alien signals', baseSize: 6000, level: 1, unlocked: false, multiplier: 12, downloading: false, desc: 'Messages from somewhere, maybe not friendly.' },
-    { name: 'The Galaxy Archive', baseSize: 20000, level: 1, unlocked: false, multiplier: 20, downloading: false, desc: 'Star systems, civilizations, cosmic secrets… all yours.' },
-    { name: 'The BIG SECRET', baseSize: 100000, level: 1, unlocked: false, multiplier: 50, downloading: false, desc: 'The ultimate revelation, the plot twist, the thing they didn’t want you to see.' }
+    { name: 'Junk (empty .txt)', baseSize: 0.1, level: 1, unlocked: true, multiplier: 1, downloading: false, desc: 'Worth almost nothing… but hey, it’s better than nothing.', img: 'assets/lvl1.png' },
+    { name: 'Single-bit file', baseSize: 0.3, level: 1, unlocked: false, multiplier: 1.3, downloading: false, desc: 'Just a lonely 0 or 1, but rare enough to brag about.', img: 'assets/lvl2.png' },
+    { name: 'Game mods', baseSize: 1, level: 1, unlocked: false, multiplier: 1.6, downloading: false, desc: 'Tiny chaos waiting to be unleashed.', img: 'assets/lvl3.png' },
+    { name: 'Image File', baseSize: 3, level: 1, unlocked: false, multiplier: 2, downloading: false, desc: '', img: 'assets/lvl4.png' },
+    { name: 'Video File', baseSize: 12, level: 1, unlocked: false, multiplier: 2.5, downloading: false, desc: '', img: 'assets/lvl5.png' },
+    { name: 'HD Movie', baseSize: 48, level: 1, unlocked: false, multiplier: 3, downloading: false, desc: '', img: 'assets/lvl6.png' },
+    { name: 'Cs2 (60GB)', baseSize: 120, level: 1, unlocked: false, multiplier: 3.5, downloading: false, desc: '', img: 'assets/lvl7.png' },
+    { name: 'Government files', baseSize: 300, level: 1, unlocked: false, multiplier: 4.5, downloading: false, desc: 'Top secret, highly dangerous, incredibly valuable.', img: 'assets/lvl8.png' },
+    { name: 'Encryption keys', baseSize: 800, level: 1, unlocked: false, multiplier: 6, downloading: false, desc: 'Unlock everything… if you dare.', img: 'assets/lvl9.jpeg' },
+    { name: 'AI models', baseSize: 2000, level: 1, unlocked: false, multiplier: 8, downloading: false, desc: 'Artificial minds ready for your command.', img: 'assets/lvl10.png' },
+    { name: 'Alien signals', baseSize: 6000, level: 1, unlocked: false, multiplier: 12, downloading: false, desc: 'Messages from somewhere, maybe not friendly.', img: 'assets/lvl11.png' },
+    { name: 'The Galaxy Archive', baseSize: 20000, level: 1, unlocked: false, multiplier: 20, downloading: false, desc: 'Star systems, civilizations, cosmic secrets… all yours.', img: 'assets/lvl12.png' },
+    { name: 'The BIG SECRET', baseSize: 100000, level: 1, unlocked: false, multiplier: 50, downloading: false, desc: 'The ultimate revelation, the plot twist, the thing they didn’t want you to see.', img: 'assets/lvl13.png' }
 ];
 
 const storageTypes = [
