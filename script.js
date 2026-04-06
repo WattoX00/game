@@ -17,6 +17,7 @@ const uiIcons = {
     internet: 'assets/internet.png',
     info: 'assets/information.png',
     printer: 'assets/printer.png',
+    market: 'assets/market.png',
     lvl1: 'assets/storagelvl1.png',
     lvl2: 'assets/storagelvl2.png',
     lvl3: 'assets/storagelvl3.png',
@@ -115,6 +116,7 @@ function getPrintDuration() {
     const duration = PRINTER_BASE_TIME * Math.pow(0.95, printerUpgradeLevel);
     return Math.max(1, Math.ceil(duration));
 }
+
 function formatDisplayNumber(val) {
     if (!isFinite(val)) return String(val);
     function trimZeros(s) { return s.replace(/\.?0+$/, ''); }
@@ -131,7 +133,7 @@ function formatSizeFromMB(valueMB) {
     let idx = 0;
     while (idx < units.length - 1) {
         const next = value / 1000;
-        if (next >= 0.1) {
+        if (next >= 1) {
             value = next;
             idx++;
         } else {
@@ -372,7 +374,7 @@ function renderUpgrades() {
         const div = document.createElement('div');
         div.className = 'upgrade';
         div.innerHTML = `
-            <p>Upgrade Storage to ${nextStorage.name} (${formatSizeFromMB(nextStorage.capacity)})</p>
+            <p>Upgrade Storage to <img src="${getStorageIcon()}" style="width:32px;height:32px;"> ${nextStorage.name} (${formatSizeFromMB(nextStorage.capacity)})</p>
             <button onclick="upgradeStorage()">${getStorageCost(currentStorageIndex)} <img src="${actionIcons.sell}" style="width:32px;height:32px;"></button>
         `;
         upgradesDiv.appendChild(div);
@@ -383,7 +385,7 @@ function renderUpgrades() {
         const div = document.createElement('div');
         div.className = 'upgrade';
         div.innerHTML = `
-            <p>Upgrade Black Market Multiplier to ${(blackMarketMultiplier + 0.1).toFixed(1)}x</p>
+            <p><img src="${uiIcons.market}" style="width:32px;height:32px;">${(blackMarketMultiplier + 0.1).toFixed(1)}x</p>
             <button onclick="upgradeBlackMarket()">${Math.floor(cost)} <img src="${actionIcons.sell}" style="width:32px;height:32px;"></button>
         `;
         upgradesDiv.appendChild(div);
@@ -678,7 +680,7 @@ function renderBlackMarket() {
     const seconds = Math.floor((timeLeft % 60000) / 1000);
 
     bmDiv.innerHTML = `
-        <p>Current Boost: ${boostedName} (${blackMarketMultiplier.toFixed(1)}x)</p>
+        <p><img src="${uiIcons.market}" style="width:32px;height:32px;"> ${boostedName} (${blackMarketMultiplier.toFixed(1)}x)</p>
         <p>Next boost in: ${minutes}:${seconds.toString().padStart(2, '0')}</p>
     `;
 }
