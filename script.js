@@ -80,6 +80,35 @@ function getPrintDuration() {
     const duration = PRINTER_BASE_TIME * Math.pow(0.95, printerUpgradeLevel);
     return Math.max(1, Math.ceil(duration));
 }
+function formatDisplayNumber(val) {
+    if (!isFinite(val)) return String(val);
+    function trimZeros(s) { return s.replace(/\.?0+$/, ''); }
+    if (val >= 100) return Math.round(val).toString();
+    if (val >= 10) return trimZeros(val.toFixed(1));
+    if (val >= 1) return trimZeros(val.toFixed(2));
+    return trimZeros(val.toFixed(3));
+}
+
+function formatSizeFromMB(valueMB) {
+    const units = ['kb','mb','gb','tb','pb'];
+    if (isNaN(valueMB)) valueMB = 0;
+    let value = valueMB * 1000;
+    let idx = 0;
+    while (idx < units.length - 1) {
+        const next = value / 1000;
+        if (next >= 0.1) {
+            value = next;
+            idx++;
+        } else {
+            break;
+        }
+    }
+    return `${formatDisplayNumber(value)} ${units[idx]}`;
+}
+
+function formatDataRateMBps(valueMBps) {
+    return `${formatSizeFromMB(valueMBps)}/s`;
+}
 
 function getSellPriceGlobal(item) {
     let price = item.size * item.multiplier * 0.5;
@@ -91,8 +120,8 @@ function getSellPriceGlobal(item) {
 
 function updateDisplay() {
     document.getElementById('money').textContent = `Money: $${money.toFixed(2)}`;
-    document.getElementById('storage-info').textContent = `Storage: ${storageType} (${storageUsed.toFixed(2)} MB used, ${reservedStorage.toFixed(2)} MB reserved / ${storageCapacity} MB)`;
-    document.getElementById('internet-speed').textContent = `Internet Speed: ${(internetSpeed * 1000).toFixed(1)} kb/s`;
+    document.getElementById('storage-info').textContent = `Storage: ${storageType} (${formatSizeFromMB(storageUsed)} used, ${formatSizeFromMB(reservedStorage)} reserved / ${formatSizeFromMB(storageCapacity)})`;
+    document.getElementById('internet-speed').textContent = `Internet Speed: ${formatDataRateMBps(internetSpeed)}`;
     
     renderBulkControls();
     renderDownloads();
@@ -132,7 +161,7 @@ function renderDownloads() {
                 >ℹ️</button>
 
                 <p>${item.name} (Level ${item.level})</p>
-                <p>Size: ${size.toFixed(2)} MB</p>
+                <p>Size: ${formatSizeFromMB(size)}</p>
 
                 <button onclick="bulkDownloadItem(${index}, ${quantity})" ${item.downloading ? 'disabled' : ''}>
                     ${item.downloading ? 'Downloading...' : `Download x${quantity} (${Math.floor(time)}s)`}
@@ -239,7 +268,7 @@ function renderStorage() {
 
         div.innerHTML = `
             <p>${item.name} (Level ${item.level})</p>
-            <p>Size: ${item.size.toFixed(3)} MB</p>
+            <p>Size: ${formatSizeFromMB(item.size)}</p>
             ${buttons}
             `;
 
@@ -256,7 +285,7 @@ function renderUpgrades() {
         const div = document.createElement('div');
         div.className = 'upgrade';
         div.innerHTML = `
-            <p>Upgrade Internet Speed to ${(nextInternet.speed * 1000).toFixed(1)} kb/s</p>
+            <p>Upgrade Internet Speed to ${formatDataRateMBps(nextInternet.speed)}</p>
             <button onclick="upgradeInternet()">Buy ($${nextInternet.cost})</button>
         `;
         upgradesDiv.appendChild(div);
@@ -267,7 +296,7 @@ function renderUpgrades() {
         const div = document.createElement('div');
         div.className = 'upgrade';
         div.innerHTML = `
-            <p>Upgrade Storage to ${nextStorage.name} (${nextStorage.capacity} MB)</p>
+            <p>Upgrade Storage to ${nextStorage.name} (${formatSizeFromMB(nextStorage.capacity)})</p>
             <button onclick="upgradeStorage()">Buy ($${getStorageCost(currentStorageIndex)})</button>
         `;
         upgradesDiv.appendChild(div);
