@@ -546,7 +546,6 @@ function upgradeItem(index) {
             }
             if (index + 1 === 3) {
                 printerUnlocked = true;
-                alert('Printer unlocked!');
             }
         }
 
