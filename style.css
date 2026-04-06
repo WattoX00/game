@@ -1,7 +1,7 @@
 body {
     font-family: Arial, sans-serif;
     margin: 20px;
-    background: url(assets/bg.png);
+    background: url(assets/backgrounds/bg.png);
 }
 
 h2 {
@@ -50,7 +50,6 @@ button {
     border: 1px solid #ccc;
     padding: 10px;
     margin: 5px;
-    background-image: url("assets/backgrounds/lvl13.png");
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;

@@ -28,6 +28,22 @@ const uiIcons = {
     lvl8: 'assets/storages/lvl8.png',
 }
 
+const backgrounds = {
+    lvl1: 'assets/backgrounds/lvl1.png',
+    lvl2: 'assets/backgrounds/lvl2.png',
+    lvl3: 'assets/backgrounds/lvl3.png',
+    lvl4: 'assets/backgrounds/lvl4.png',
+    lvl5: 'assets/backgrounds/lvl5.png',
+    lvl6: 'assets/backgrounds/lvl6.png',
+    lvl7: 'assets/backgrounds/lvl7.png',
+    lvl8: 'assets/backgrounds/lvl8.png',
+    lvl9: 'assets/backgrounds/lvl9.png',
+    lvl10: 'assets/backgrounds/lvl10.png',
+    lvl11: 'assets/backgrounds/lvl11.png',
+    lvl12: 'assets/backgrounds/lvl12.png',
+    lvl13: 'assets/backgrounds/lvl13.png'
+};
+
 function getStorageIcon() {
     switch(currentStorageIndex) {
         case 0: return uiIcons.lvl1;
@@ -43,19 +59,19 @@ function getStorageIcon() {
 }
 
 const items = [
-    { name: 'Junk (empty .txt)', baseSize: 0.1, level: 1, unlocked: true, multiplier: 1, downloading: false, desc: 'Worth almost nothing… but hey, it’s better than nothing.', img: 'assets/lvl1.png' },
-    { name: 'Single-bit file', baseSize: 0.3, level: 1, unlocked: false, multiplier: 1.3, downloading: false, desc: 'Just a lonely 0 or 1, but rare enough to brag about.', img: 'assets/lvl2.png' },
-    { name: 'Game mods', baseSize: 1, level: 1, unlocked: false, multiplier: 1.6, downloading: false, desc: 'Tiny chaos waiting to be unleashed.', img: 'assets/lvl3.png' },
-    { name: 'Image File', baseSize: 3, level: 1, unlocked: false, multiplier: 2, downloading: false, desc: '', img: 'assets/lvl4.png' },
-    { name: 'Video File', baseSize: 12, level: 1, unlocked: false, multiplier: 2.5, downloading: false, desc: '', img: 'assets/lvl5.png' },
-    { name: 'HD Movie', baseSize: 48, level: 1, unlocked: false, multiplier: 3, downloading: false, desc: '', img: 'assets/lvl6.png' },
-    { name: 'Cs2 (60GB)', baseSize: 120, level: 1, unlocked: false, multiplier: 3.5, downloading: false, desc: '', img: 'assets/lvl7.png' },
-    { name: 'Government files', baseSize: 300, level: 1, unlocked: false, multiplier: 4.5, downloading: false, desc: 'Top secret, highly dangerous, incredibly valuable.', img: 'assets/lvl8.png' },
-    { name: 'Encryption keys', baseSize: 800, level: 1, unlocked: false, multiplier: 6, downloading: false, desc: 'Unlock everything… if you dare.', img: 'assets/lvl9.jpeg' },
-    { name: 'AI models', baseSize: 2000, level: 1, unlocked: false, multiplier: 8, downloading: false, desc: 'Artificial minds ready for your command.', img: 'assets/lvl10.png' },
-    { name: 'Alien signals', baseSize: 6000, level: 1, unlocked: false, multiplier: 12, downloading: false, desc: 'Messages from somewhere, maybe not friendly.', img: 'assets/lvl11.png' },
-    { name: 'The Galaxy Archive', baseSize: 20000, level: 1, unlocked: false, multiplier: 20, downloading: false, desc: 'Star systems, civilizations, cosmic secrets… all yours.', img: 'assets/lvl12.png' },
-    { name: 'The BIG SECRET', baseSize: 100000, level: 1, unlocked: false, multiplier: 50, downloading: false, desc: 'The ultimate revelation, the plot twist, the thing they didn’t want you to see.', img: 'assets/lvl13.png' }
+    { name: 'Junk (empty .txt)', baseSize: 0.1, level: 1, unlocked: true, multiplier: 1, downloading: false, desc: 'Worth almost nothing… but hey, it’s better than nothing.', img: 'assets/items/lvl1.png' },
+    { name: 'Single-bit file', baseSize: 0.3, level: 1, unlocked: false, multiplier: 1.3, downloading: false, desc: 'Just a lonely 0 or 1, but rare enough to brag about.', img: 'assets/items/lvl2.png' },
+    { name: 'Game mods', baseSize: 1, level: 1, unlocked: false, multiplier: 1.6, downloading: false, desc: 'Tiny chaos waiting to be unleashed.', img: 'assets/items/lvl3.png' },
+    { name: 'Image File', baseSize: 3, level: 1, unlocked: false, multiplier: 2, downloading: false, desc: '', img: 'assets/items/lvl4.png' },
+    { name: 'Video File', baseSize: 12, level: 1, unlocked: false, multiplier: 2.5, downloading: false, desc: '', img: 'assets/items/lvl5.png' },
+    { name: 'HD Movie', baseSize: 48, level: 1, unlocked: false, multiplier: 3, downloading: false, desc: '', img: 'assets/items/lvl6.png' },
+    { name: 'Cs2 (60GB)', baseSize: 120, level: 1, unlocked: false, multiplier: 3.5, downloading: false, desc: '', img: 'assets/items/lvl7.png' },
+    { name: 'Government files', baseSize: 300, level: 1, unlocked: false, multiplier: 4.5, downloading: false, desc: 'Top secret, highly dangerous, incredibly valuable.', img: 'assets/items/lvl8.png' },
+    { name: 'Encryption keys', baseSize: 800, level: 1, unlocked: false, multiplier: 6, downloading: false, desc: 'Unlock everything… if you dare.', img: 'assets/items/lvl9.jpeg' },
+    { name: 'AI models', baseSize: 2000, level: 1, unlocked: false, multiplier: 8, downloading: false, desc: 'Artificial minds ready for your command.', img: 'assets/items/lvl10.png' },
+    { name: 'Alien signals', baseSize: 6000, level: 1, unlocked: false, multiplier: 12, downloading: false, desc: 'Messages from somewhere, maybe not friendly.', img: 'assets/items/lvl11.png' },
+    { name: 'The Galaxy Archive', baseSize: 20000, level: 1, unlocked: false, multiplier: 20, downloading: false, desc: 'Star systems, civilizations, cosmic secrets… all yours.', img: 'assets/items/lvl12.png' },
+    { name: 'The BIG SECRET', baseSize: 100000, level: 1, unlocked: false, multiplier: 50, downloading: false, desc: 'The ultimate revelation, the plot twist, the thing they didn’t want you to see.', img: 'assets/items/lvl13.png' }
 ];
 
 const storageTypes = [
@@ -212,6 +228,11 @@ function renderDownloads() {
             const div = document.createElement('div');
             div.className = 'item';
             div.style.position = 'relative';
+            const bgKey = `lvl${index + 1}`;
+
+            if (backgrounds[bgKey]) {
+                div.style.backgroundImage = `url(${backgrounds[bgKey]})`;
+            }
 
             div.innerHTML = `
                 <button 
@@ -219,7 +240,7 @@ function renderDownloads() {
                     onmouseover="showItemInfo(${index})"
                     onmouseout="hideItemInfo(${index})"
                     style="position:absolute; font-size:12px; padding:2px 6px; top:5px; right:5px;"
-                ><img src="${uiIcons.info}" style="width:16px;height:16px;"></button>
+                ><img src="${actionIcons.info}" style="width:16px;height:16px;"></button>
 
                 <img src="${item.img}" alt="${item.name}" style="width:40px;height:40px;margin-right:6px;vertical-align:middle;">
                 <p>${item.name} (Level ${item.level})</p>
