@@ -333,7 +333,7 @@ function renderUpgrades() {
         div.className = 'upgrade';
         div.innerHTML = `
             <p>Upgrade Internet Speed to ${formatDataRateMBps(nextInternet.speed)}</p>
-            <button onclick="upgradeInternet()">Buy ($${nextInternet.cost})</button>
+            <button onclick="upgradeInternet()"><img src="${actionIcons.sell}" style="width:32px;height:32px;"> $${nextInternet.cost}</button>
         `;
         upgradesDiv.appendChild(div);
     }
@@ -344,7 +344,7 @@ function renderUpgrades() {
         div.className = 'upgrade';
         div.innerHTML = `
             <p>Upgrade Storage to ${nextStorage.name} (${formatSizeFromMB(nextStorage.capacity)})</p>
-            <button onclick="upgradeStorage()">Buy ($${getStorageCost(currentStorageIndex)})</button>
+            <button onclick="upgradeStorage()"><img src="${actionIcons.sell}" style="width:32px;height:32px;"> $${getStorageCost(currentStorageIndex)}</button>
         `;
         upgradesDiv.appendChild(div);
     }
@@ -355,7 +355,7 @@ function renderUpgrades() {
         div.className = 'upgrade';
         div.innerHTML = `
             <p>Upgrade Black Market Multiplier to ${(blackMarketMultiplier + 0.1).toFixed(1)}x</p>
-            <button onclick="upgradeBlackMarket()">Buy $${Math.floor(cost)}</button>
+            <button onclick="upgradeBlackMarket()"><img src="${actionIcons.sell}" style="width:32px;height:32px;"> $${Math.floor(cost)}</button>
         `;
         upgradesDiv.appendChild(div);
     }
@@ -366,7 +366,7 @@ function renderUpgrades() {
         const curTime = getPrintDuration();
         divP.innerHTML = `
             <p>Decrease print time (current: ${curTime}s)</p>
-            <button onclick="buyPrinterUpgrade()">Buy ($${getPrinterUpgradeCost()})</button>
+            <button onclick="buyPrinterUpgrade()"><img src="${actionIcons.sell}" style="width:32px;height:32px;"> ($${getPrinterUpgradeCost()})</button>
         `;
         upgradesDiv.appendChild(divP);
 
@@ -376,7 +376,7 @@ function renderUpgrades() {
             d.className = 'upgrade';
             d.innerHTML = `
                 <p>Autoseller: Automatically sell duplicated items</p>
-                <button onclick="buyAutoseller()">Buy ($${cost})</button>
+                <button onclick="buyAutoseller()"><img src="${actionIcons.sell}" style="width:32px;height:32px;"> ($${cost})</button>
             `;
             upgradesDiv.appendChild(d);
         }
@@ -387,7 +387,7 @@ function renderUpgrades() {
             d.className = 'upgrade';
             d.innerHTML = `
                 <p>Autobuyer: Requeue an item to print again automatically</p>
-                <button onclick="buyAutobuyer()">Buy ($${cost})</button>
+                <button onclick="buyAutobuyer()"><img src="${actionIcons.sell}" style="width:32px;height:32px;"> ($${cost})</button>
             `;
             upgradesDiv.appendChild(d);
         }
@@ -398,7 +398,7 @@ function renderUpgrades() {
             d.className = 'upgrade';
             d.innerHTML = `
                 <p>Double Print Chance: 20% chance to print 2 copies</p>
-                <button onclick="buyDoublePrint()">Buy ($${cost})</button>
+                <button onclick="buyDoublePrint()"><img src="${actionIcons.sell}" style="width:32px;height:32px;"> ($${cost})</button>
             `;
             upgradesDiv.appendChild(d);
         }
@@ -409,7 +409,7 @@ function renderUpgrades() {
             d2.className = 'upgrade';
             d2.innerHTML = `
                 <p>Increase Double Print Chance (+4% per upgrade). Current: ${(getDoublePrintChance()*100).toFixed(1)}%</p>
-                <button onclick="buyDoublePrintUpgrade()">Buy ($${cost})</button>
+                <button onclick="buyDoublePrintUpgrade()"><img src="${actionIcons.sell}" style="width:32px;height:32px;"> ($${cost})</button>
             `;
             upgradesDiv.appendChild(d2);
         }
