@@ -363,7 +363,7 @@ function renderUpgrades() {
         const div = document.createElement('div');
         div.className = 'upgrade';
         div.innerHTML = `
-            <p>Upgrade Internet Speed to ${formatDataRateMBps(nextInternet.speed)}</p>
+            <p><img src="${uiIcons.internet}" style="width:32px;height:32px;"> ${formatDataRateMBps(nextInternet.speed)}</p>
             <button onclick="upgradeInternet()">${nextInternet.cost} <img src="${actionIcons.sell}" style="width:32px;height:32px;"></button>
         `;
         upgradesDiv.appendChild(div);
