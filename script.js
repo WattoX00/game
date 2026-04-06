@@ -31,24 +31,20 @@ const storageTypes = [
     { name: 'Galaxy Archive Disk', capacity: 10485760 },
 ];
 
-function generateInternetSpeeds() {
-    const speeds = [];
-    let baseSpeed = 0.02;
-
-    for (let i = 1; i <= 12; i++) {
-        speeds.push({
-            level: i,
-            speed: baseSpeed,
-            cost: Math.floor(Math.pow(6, i) * 2)
-        });
-
-        baseSpeed *= 3.2;
-    }
-
-    return speeds;
-}
-
-const internetSpeeds = generateInternetSpeeds();
+const internetSpeeds = [
+    { level: 1, speed: 0.02, cost: 0.02 },
+    { level: 2, speed: 0.05, cost: 0.5 },
+    { level: 3, speed: 0.1, cost: 1 },
+    { level: 4, speed: 0.5, cost: 10 },
+    { level: 5, speed: 5, cost: 100 },
+    { level: 6, speed: 20, cost: 500 },
+    { level: 7, speed: 100, cost: 2000 },
+    { level: 8, speed: 500, cost: 5000 },
+    { level: 9, speed: 1000, cost: 10000 },
+    { level: 10, speed: 10000, cost: 100000 },
+    { level: 11, speed: 100000, cost: 1000000 },
+    { level: 12, speed: 1000000, cost: 10000000 },
+];
 
 let currentInternetLevel = 1;
 let currentStorageIndex = 0;
@@ -77,6 +73,13 @@ function updateDisplay() {
 function renderDownloads() {
     const downloadsDiv = document.getElementById('downloads');
     downloadsDiv.innerHTML = '';
+    function getUpgradeCost(index, level) {
+        const baseCost = 1;
+        const itemTierScale = Math.pow(3, index);
+        const levelScale = Math.pow(1.4, level - 1);
+
+        return Math.floor(baseCost * itemTierScale * levelScale);
+    }
 
     items.forEach((item, index) => {
         if (item.unlocked) {
@@ -102,7 +105,7 @@ function renderDownloads() {
                 </button>
 
                 <button onclick="upgradeItem(${index})">
-                    Upgrade ($${Math.floor(Math.pow(1.5, item.level - 1))})
+                    Upgrade ($${getUpgradeCost(index, item.level)})
                 </button>
 
                 <div id="info-${index}" 
@@ -294,11 +297,12 @@ function sellItem(index) {
 function upgradeItem(index) {
     const item = items[index];
 
-    function getUpgradeCost(itemIndex, level) {
-        const tierMultiplier = Math.pow(4, itemIndex); 
-        const levelGrowth = Math.pow(1.35, level - 1);
+    function getUpgradeCost(index, level) {
+        const baseCost = 25;
+        const itemTierScale = Math.pow(3, index);
+        const levelScale = Math.pow(1.4, level - 1);
 
-        return Math.floor(10 * tierMultiplier * levelGrowth);
+        return Math.floor(baseCost * itemTierScale * levelScale);
     }
 
     const cost = getUpgradeCost(index, item.level);
