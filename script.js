@@ -8,24 +8,24 @@ const bulkOptions = [1,5,10,25];
 let reservedStorage = 0;
 
 const actionIcons = {
-    sell: 'assets/sell.png',
-    levelup: 'assets/levelup.png',
-    download: 'assets/download.png',
+    sell: 'assets/actions/sell.png',
+    levelup: 'assets/actions/levelup.png',
+    download: 'assets/actions/download.png',
+    info: 'assets/actions/information.png',
 };
 
 const uiIcons = {
     internet: 'assets/internet.png',
-    info: 'assets/information.png',
     printer: 'assets/printer.png',
     market: 'assets/market.png',
-    lvl1: 'assets/storagelvl1.png',
-    lvl2: 'assets/storagelvl2.png',
-    lvl3: 'assets/storagelvl3.png',
-    lvl4: 'assets/storagelvl4.png',
-    lvl5: 'assets/storagelvl5.png',
-    lvl6: 'assets/storagelvl6.png',
-    lvl7: 'assets/storagelvl7.png',
-    lvl8: 'assets/storagelvl8.png',
+    lvl1: 'assets/storages/lvl1.png',
+    lvl2: 'assets/storages/lvl2.png',
+    lvl3: 'assets/storages/lvl3.png',
+    lvl4: 'assets/storages/lvl4.png',
+    lvl5: 'assets/storages/lvl5.png',
+    lvl6: 'assets/storages/lvl6.png',
+    lvl7: 'assets/storages/lvl7.png',
+    lvl8: 'assets/storages/lvl8.png',
 }
 
 function getStorageIcon() {
