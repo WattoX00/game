@@ -31,20 +31,24 @@ const storageTypes = [
     { name: 'Galaxy Archive Disk', capacity: 10485760 },
 ];
 
-const internetSpeeds = [
-    { level: 1, speed: 0.02, cost: 0.02 },
-    { level: 2, speed: 0.05, cost: 0.5 },
-    { level: 3, speed: 0.1, cost: 1 },
-    { level: 4, speed: 0.5, cost: 10 },
-    { level: 5, speed: 5, cost: 100 },
-    { level: 6, speed: 20, cost: 500 },
-    { level: 7, speed: 100, cost: 2000 },
-    { level: 8, speed: 500, cost: 5000 },
-    { level: 9, speed: 1000, cost: 10000 },
-    { level: 10, speed: 10000, cost: 100000 },
-    { level: 11, speed: 100000, cost: 1000000 },
-    { level: 12, speed: 1000000, cost: 10000000 },
-];
+function generateInternetSpeeds() {
+    const speeds = [];
+    let baseSpeed = 0.02;
+
+    for (let i = 1; i <= 12; i++) {
+        speeds.push({
+            level: i,
+            speed: baseSpeed,
+            cost: Math.floor(Math.pow(6, i) * 2)
+        });
+
+        baseSpeed *= 3.2;
+    }
+
+    return speeds;
+}
+
+const internetSpeeds = generateInternetSpeeds();
 
 let currentInternetLevel = 1;
 let currentStorageIndex = 0;
@@ -77,8 +81,7 @@ function renderDownloads() {
     items.forEach((item, index) => {
         if (item.unlocked) {
             const size = item.baseSize * Math.pow(1.2, item.level - 1);
-            const time = Math.floor(size / internetSpeed);
-
+            const time = Math.max(1, Math.ceil(size / internetSpeed));
             const div = document.createElement('div');
             div.className = 'item';
             div.style.position = 'relative';
@@ -158,7 +161,13 @@ function renderStorage() {
             <p>${item.name} (Level ${item.level})</p>
             <p>Size: ${item.size.toFixed(3)} MB</p>
             `;
-        let price = item.size * item.multiplier * 0.5;
+        function getSellPrice(item) {
+            const rarityScale = Math.pow(item.multiplier, 1.15);
+            const levelScale = Math.pow(1.08, item.level);
+
+            return item.size * rarityScale * levelScale * 0.45;
+        }
+        let price = getSellPrice(item);
 
             if (
                 boostedItemIndex !== null &&
@@ -199,7 +208,7 @@ function renderUpgrades() {
         div.className = 'upgrade';
         div.innerHTML = `
             <p>Upgrade Storage to ${nextStorage.name} (${nextStorage.capacity} MB)</p>
-            <button onclick="upgradeStorage()">Buy ($10)</button>
+            <button onclick="upgradeStorage()">Buy ($${getStorageCost(currentStorageIndex)})</button>
         `;
         upgradesDiv.appendChild(div);
     }
@@ -234,6 +243,10 @@ function renderBlackMarket() {
     `;
 }
 
+function getStorageCost(index) {
+    return Math.floor(50 * Math.pow(5, index));
+}
+
 function downloadItem(index) {
     const item = items[index];
 
@@ -246,7 +259,7 @@ function downloadItem(index) {
         return;
     }
 
-    const time = Math.floor(size / internetSpeed);
+    const time = Math.max(1, Math.ceil(size / internetSpeed));
 
     item.downloading = true;
     updateDisplay();
@@ -281,9 +294,14 @@ function sellItem(index) {
 function upgradeItem(index) {
     const item = items[index];
 
-    const baseCost = 1;
-    const growth = 1.5;
-    const cost = Math.floor(baseCost * Math.pow(growth, item.level - 1));
+    function getUpgradeCost(itemIndex, level) {
+        const tierMultiplier = Math.pow(4, itemIndex); 
+        const levelGrowth = Math.pow(1.35, level - 1);
+
+        return Math.floor(10 * tierMultiplier * levelGrowth);
+    }
+
+    const cost = getUpgradeCost(index, item.level);
 
     if (money >= cost) {
         money -= cost;
