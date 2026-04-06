@@ -1,4 +1,4 @@
-let money = 1000000;
+let money = 1000000000;
 let storageCapacity = 1.44;
 let storageUsed = 0;
 let internetSpeed = 0.02;
@@ -59,6 +59,30 @@ let boostTimer = null;
 let countdownInterval = null;
 let boostStartTime = 0;
 
+let printerUnlocked = false;
+let printerActive = false;
+let printerItem = null;
+let printerEndTime = 0;
+let printerTimerId = null;
+let printerUpgradeLevel = 0;
+let autosellerBought = false;
+let autobuyerBought = false;
+let doublePrintBought = false;
+let autobuyerQueueName = null;
+const PRINTER_BASE_TIME = 60;
+
+function getPrintDuration() {
+    return Math.max(1, PRINTER_BASE_TIME - printerUpgradeLevel);
+}
+
+function getSellPriceGlobal(item) {
+    let price = item.size * item.multiplier * 0.5;
+    if (boostedItemIndex !== null && item.name === items[boostedItemIndex].name) {
+        price *= blackMarketMultiplier;
+    }
+    return price;
+}
+
 function updateDisplay() {
     document.getElementById('money').textContent = `Money: $${money.toFixed(2)}`;
     document.getElementById('storage-info').textContent = `Storage: ${storageType} (${storageCapacity} MB used: ${storageUsed.toFixed(2)} MB)`;
@@ -68,6 +92,7 @@ function updateDisplay() {
     renderStorage();
     renderUpgrades();
     renderBlackMarket();
+    renderPrinter();
 }
 
 function renderDownloads() {
@@ -160,33 +185,27 @@ function renderStorage() {
     storageItems.forEach((item, index) => {
         const div = document.createElement('div');
         div.className = 'item';
+        const price = getSellPriceGlobal(item);
+
+        let buttons = `
+            <button onclick="sellItem(${index})">Sell ($${price.toFixed(2)})</button>`;
+
+        if (printerUnlocked) {
+            buttons += ` <button onclick="startPrintFromStorage(${index})">Print</button>`;
+        }
+
+        if (autobuyerBought) {
+            const queuedLabel = autobuyerQueueName === item.name ? 'Unqueue' : 'Queue';
+            buttons += ` <button onclick="setAutobuyerQueue(${index})">${queuedLabel}</button>`;
+        }
+
         div.innerHTML = `
             <p>${item.name} (Level ${item.level})</p>
             <p>Size: ${item.size.toFixed(3)} MB</p>
+            ${buttons}
             `;
-        function getSellPrice(item) {
-            const rarityScale = Math.pow(item.multiplier, 1.15);
-            const levelScale = Math.pow(1.08, item.level);
 
-            return item.size * rarityScale * levelScale * 0.45;
-        }
-        let price = getSellPrice(item);
-
-            if (
-                boostedItemIndex !== null &&
-                item.name === items[boostedItemIndex].name
-            ) {
-                price *= blackMarketMultiplier;
-            }
-
-            div.innerHTML = `
-                <p>${item.name} (Level ${item.level})</p>
-                <p>Size: ${item.size.toFixed(3)} MB</p>
-                <button onclick="sellItem(${index})">
-                    Sell ($${price.toFixed(2)})
-                </button>
-            `;
-    storageDiv.appendChild(div);
+        storageDiv.appendChild(div);
         });
 }
 
@@ -226,6 +245,214 @@ function renderUpgrades() {
         `;
         upgradesDiv.appendChild(div);
     }
+
+    if (printerUnlocked) {
+        const divP = document.createElement('div');
+        divP.className = 'upgrade';
+        const curTime = getPrintDuration();
+        divP.innerHTML = `
+            <p>Decrease print time (current: ${curTime}s)</p>
+            <button onclick="buyPrinterUpgrade()">Buy ($${getPrinterUpgradeCost()})</button>
+        `;
+        upgradesDiv.appendChild(divP);
+
+        if (!autosellerBought) {
+            const cost = 1000;
+            const d = document.createElement('div');
+            d.className = 'upgrade';
+            d.innerHTML = `
+                <p>Autoseller: Automatically sell duplicated items</p>
+                <button onclick="buyAutoseller()">Buy ($${cost})</button>
+            `;
+            upgradesDiv.appendChild(d);
+        }
+
+        if (!autobuyerBought) {
+            const cost = 2000;
+            const d = document.createElement('div');
+            d.className = 'upgrade';
+            d.innerHTML = `
+                <p>Autobuyer: Requeue an item to print again automatically</p>
+                <button onclick="buyAutobuyer()">Buy ($${cost})</button>
+            `;
+            upgradesDiv.appendChild(d);
+        }
+
+        if (!doublePrintBought) {
+            const cost = 5000;
+            const d = document.createElement('div');
+            d.className = 'upgrade';
+            d.innerHTML = `
+                <p>Double Print Chance: 20% chance to print 2 copies</p>
+                <button onclick="buyDoublePrint()">Buy ($${cost})</button>
+            `;
+            upgradesDiv.appendChild(d);
+        }
+    }
+}
+
+function renderPrinter() {
+    const pDiv = document.getElementById('printer');
+    if (!printerUnlocked) {
+        pDiv.innerHTML = '';
+        return;
+    }
+
+    if (printerActive && printerItem) {
+        const timeLeftMs = Math.max(0, printerEndTime - Date.now());
+        const seconds = Math.ceil(timeLeftMs / 1000);
+        pDiv.innerHTML = `
+            <p>Printing: ${printerItem.name} (Level ${printerItem.level})</p>
+            <p>Time left: ${seconds}s</p>
+        `;
+    } else {
+        const queued = autobuyerBought && autobuyerQueueName ? autobuyerQueueName : 'None';
+        pDiv.innerHTML = `
+            <p>Printer idle.</p>
+            <p>Print Duration: ${getPrintDuration()}s</p>
+            <p>Autobuyer Queue: ${queued}</p>
+            <p>Autoseller: ${autosellerBought ? 'Owned' : 'Not bought'}</p>
+            <p>Double Print: ${doublePrintBought ? 'Owned' : 'Not bought'}</p>
+            <p>To print an item, click <strong>Print</strong> on an item in Storage.</p>
+        `;
+    }
+}
+
+function startPrintFromStorage(storageIndex) {
+    if (!printerUnlocked) {
+        alert('Printer not unlocked yet.');
+        return;
+    }
+    if (printerActive) {
+        alert('Printer is busy!');
+        return;
+    }
+    const item = storageItems[storageIndex];
+    if (!item) return;
+
+    storageItems.splice(storageIndex, 1);
+    storageUsed -= item.size;
+
+    printerActive = true;
+    printerItem = item;
+    printerEndTime = Date.now() + getPrintDuration() * 1000;
+
+    printerTimerId = setInterval(() => {
+        updateDisplay();
+        if (Date.now() >= printerEndTime) {
+            clearInterval(printerTimerId);
+            printerTimerId = null;
+            finishPrint();
+        }
+    }, 250);
+    updateDisplay();
+}
+
+function finishPrint() {
+    if (!printerActive || !printerItem) return;
+
+    let copies = 1;
+    if (doublePrintBought && Math.random() < 0.20) copies = 2;
+
+    storageItems.push(printerItem);
+    storageUsed += printerItem.size;
+
+    for (let i = 0; i < copies; i++) {
+        if (autosellerBought) {
+            const sale = getSellPriceGlobal(printerItem);
+            money += sale;
+            continue;
+        }
+
+        if (storageUsed + printerItem.size <= storageCapacity) {
+            storageItems.push({
+                name: printerItem.name,
+                size: printerItem.size,
+                level: printerItem.level,
+                multiplier: printerItem.multiplier
+            });
+            storageUsed += printerItem.size;
+        } else {
+            const sale = getSellPriceGlobal(printerItem);
+            money += sale;
+        }
+    }
+
+    printerActive = false;
+    printerItem = null;
+    printerEndTime = 0;
+
+    updateDisplay();
+
+    if (autobuyerBought && autobuyerQueueName) {
+        const idx = storageItems.findIndex(it => it.name === autobuyerQueueName);
+        if (idx !== -1) {
+            setTimeout(() => startPrintFromStorage(idx), 200);
+        }
+    }
+}
+
+function getPrinterUpgradeCost() {
+    return Math.floor(250 * Math.pow(2, printerUpgradeLevel));
+}
+
+function buyPrinterUpgrade() {
+    const cost = getPrinterUpgradeCost();
+    if (money >= cost) {
+        money -= cost;
+        printerUpgradeLevel++;
+        updateDisplay();
+    } else {
+        alert('Not enough money!');
+    }
+}
+
+function buyAutoseller() {
+    const cost = 1000;
+    if (money >= cost) {
+        money -= cost;
+        autosellerBought = true;
+        updateDisplay();
+    } else {
+        alert('Not enough money!');
+    }
+}
+
+function buyAutobuyer() {
+    const cost = 2000;
+    if (money >= cost) {
+        money -= cost;
+        autobuyerBought = true;
+        updateDisplay();
+    } else {
+        alert('Not enough money!');
+    }
+}
+
+function buyDoublePrint() {
+    const cost = 5000;
+    if (money >= cost) {
+        money -= cost;
+        doublePrintBought = true;
+        updateDisplay();
+    } else {
+        alert('Not enough money!');
+    }
+}
+
+function setAutobuyerQueue(storageIndex) {
+    if (!autobuyerBought) {
+        alert('Autobuyer not purchased.');
+        return;
+    }
+    const item = storageItems[storageIndex];
+    if (!item) return;
+    if (autobuyerQueueName === item.name) {
+        autobuyerQueueName = null;
+    } else {
+        autobuyerQueueName = item.name;
+    }
+    updateDisplay();
 }
 
 function renderBlackMarket() {
@@ -316,6 +543,10 @@ function upgradeItem(index) {
             if (index + 1 === 3) {
                 blackMarketUnlocked = true;
                 startBlackMarket();
+            }
+            if (index + 1 === 5) {
+                printerUnlocked = true;
+                alert('Printer unlocked!');
             }
         }
 
