@@ -178,7 +178,7 @@ function updateDisplay() {
 
     if (moneyEl) moneyEl.innerHTML = `${money.toFixed(2)} <img src="${actionIcons.sell}" style="width:32px;height:32px;">`;
     if (storageInfoEl) {
-    storageInfoEl.innerHTML = `<img src="${getStorageIcon()}" style="width:64px;height:64px;"> ${storageType} (${formatSizeFromMB(storageUsed)} used, ${formatSizeFromMB(reservedStorage)} reserved / ${formatSizeFromMB(storageCapacity)})`;}
+    storageInfoEl.innerHTML = `<img src="${getStorageIcon()}" style="width:32px;height:32px;"> ${storageType} (${formatSizeFromMB(storageUsed)} used, ${formatSizeFromMB(reservedStorage)} reserved / ${formatSizeFromMB(storageCapacity)})`;}
     if (internetEl) internetEl.innerHTML = `<img src="${uiIcons.internet}" style="width:16px;height:16px;"> ${formatDataRateMBps(internetSpeed)}`;
 
     renderBulkControls();
