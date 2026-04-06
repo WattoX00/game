@@ -5,6 +5,7 @@ let internetSpeed = 0.02;
 let storageType = 'Floppy Disk';
 let currentBulkQuantity = 1;
 const bulkOptions = [1,5,10,25];
+let reservedStorage = 0;
 
 const items = [
     { name: 'Junk (empty .txt)', baseSize: 0.1, level: 1, unlocked: true, multiplier: 1, downloading: false, desc: 'Worth almost nothing… but hey, it’s better than nothing.' },
@@ -68,13 +69,16 @@ let printerEndTime = 0;
 let printerTimerId = null;
 let printerUpgradeLevel = 0;
 let autosellerBought = false;
+let autosellerEnabled = false;
 let autobuyerBought = false;
 let doublePrintBought = false;
+let doublePrintUpgrades = 0;
 let autobuyerQueueName = null;
 const PRINTER_BASE_TIME = 60;
 
 function getPrintDuration() {
-    return Math.max(1, PRINTER_BASE_TIME - printerUpgradeLevel);
+    const duration = PRINTER_BASE_TIME * Math.pow(0.95, printerUpgradeLevel);
+    return Math.max(1, Math.ceil(duration));
 }
 
 function getSellPriceGlobal(item) {
@@ -87,7 +91,7 @@ function getSellPriceGlobal(item) {
 
 function updateDisplay() {
     document.getElementById('money').textContent = `Money: $${money.toFixed(2)}`;
-    document.getElementById('storage-info').textContent = `Storage: ${storageType} (${storageCapacity} MB used: ${storageUsed.toFixed(2)} MB)`;
+    document.getElementById('storage-info').textContent = `Storage: ${storageType} (${storageUsed.toFixed(2)} MB used, ${reservedStorage.toFixed(2)} MB reserved / ${storageCapacity} MB)`;
     document.getElementById('internet-speed').textContent = `Internet Speed: ${(internetSpeed * 1000).toFixed(1)} kb/s`;
     
     renderBulkControls();
@@ -322,6 +326,17 @@ function renderUpgrades() {
             `;
             upgradesDiv.appendChild(d);
         }
+
+        if (doublePrintBought) {
+            const cost = getDoublePrintUpgradeCost();
+            const d2 = document.createElement('div');
+            d2.className = 'upgrade';
+            d2.innerHTML = `
+                <p>Increase Double Print Chance (+4% per upgrade). Current: ${(getDoublePrintChance()*100).toFixed(1)}%</p>
+                <button onclick="buyDoublePrintUpgrade()">Buy ($${cost})</button>
+            `;
+            upgradesDiv.appendChild(d2);
+        }
     }
 }
 
@@ -341,14 +356,18 @@ function renderPrinter() {
         `;
     } else {
         const queued = autobuyerBought && autobuyerQueueName ? autobuyerQueueName : 'None';
-        pDiv.innerHTML = `
-            <p>Printer idle.</p>
-            <p>Print Duration: ${getPrintDuration()}s</p>
-            <p>Autobuyer Queue: ${queued}</p>
-            <p>Autoseller: ${autosellerBought ? 'Owned' : 'Not bought'}</p>
-            <p>Double Print: ${doublePrintBought ? 'Owned' : 'Not bought'}</p>
-            <p>To print an item, click <strong>Print</strong> on an item in Storage.</p>
-        `;
+        let html = '';
+        html += `<p>Printer idle.</p>`;
+        html += `<p>Print Duration: ${getPrintDuration()}s</p>`;
+        html += `<p>Autobuyer Queue: ${queued}</p>`;
+        if (autosellerBought) {
+            html += `<p>Autoseller: ${autosellerEnabled ? 'On' : 'Off'} <button onclick="toggleAutoseller()">${autosellerEnabled ? 'Disable' : 'Enable'}</button></p>`;
+        } else {
+            html += `<p>Autoseller: Not bought</p>`;
+        }
+        html += `<p>Double Print Chance: ${(getDoublePrintChance()*100).toFixed(1)}%</p>`;
+        html += `<p>To print an item, click <strong>Print</strong> on an item in Storage.</p>`;
+        pDiv.innerHTML = html;
     }
 }
 
@@ -385,20 +404,16 @@ function startPrintFromStorage(storageIndex) {
 function finishPrint() {
     if (!printerActive || !printerItem) return;
 
-    let copies = 1;
-    if (doublePrintBought && Math.random() < 0.20) copies = 2;
-
-    storageItems.push(printerItem);
-    storageUsed += printerItem.size;
+    const copies = Math.random() < getDoublePrintChance() ? 2 : 1;
 
     for (let i = 0; i < copies; i++) {
-        if (autosellerBought) {
+        if (i > 0 && autosellerBought && autosellerEnabled) {
             const sale = getSellPriceGlobal(printerItem);
             money += sale;
             continue;
         }
 
-        if (storageUsed + printerItem.size <= storageCapacity) {
+        if (storageUsed + reservedStorage + printerItem.size <= storageCapacity) {
             storageItems.push({
                 name: printerItem.name,
                 size: printerItem.size,
@@ -467,6 +482,7 @@ function buyAutoseller() {
     if (money >= cost) {
         money -= cost;
         autosellerBought = true;
+        autosellerEnabled = true;
         updateDisplay();
     } else {
         alert('Not enough money!');
@@ -495,6 +511,30 @@ function buyDoublePrint() {
     }
 }
 
+function getDoublePrintChance() {
+    if (!doublePrintBought) return 0;
+    return Math.min(1, 0.20 + doublePrintUpgrades * 0.04);
+}
+
+function getDoublePrintUpgradeCost() {
+    return Math.floor(2000 * Math.pow(2, doublePrintUpgrades));
+}
+
+function buyDoublePrintUpgrade() {
+    if (!doublePrintBought) {
+        alert('Buy the base Double Print upgrade first!');
+        return;
+    }
+    const cost = getDoublePrintUpgradeCost();
+    if (money >= cost) {
+        money -= cost;
+        doublePrintUpgrades++;
+        updateDisplay();
+    } else {
+        alert('Not enough money!');
+    }
+}
+
 function setAutobuyerQueue(storageIndex) {
     if (!autobuyerBought) {
         alert('Autobuyer not purchased.');
@@ -507,6 +547,15 @@ function setAutobuyerQueue(storageIndex) {
     } else {
         autobuyerQueueName = item.name;
     }
+    updateDisplay();
+}
+
+function toggleAutoseller() {
+    if (!autosellerBought) {
+        alert('Autoseller not purchased.');
+        return;
+    }
+    autosellerEnabled = !autosellerEnabled;
     updateDisplay();
 }
 
@@ -543,17 +592,19 @@ function bulkDownloadItem(index, quantity = currentBulkQuantity) {
     const sizeEach = item.baseSize * Math.pow(1.2, item.level - 1);
     const totalSize = sizeEach * quantity;
 
-    if (storageUsed + totalSize > storageCapacity) {
+    if (storageUsed + reservedStorage + totalSize > storageCapacity) {
         alert('Not enough storage space!');
         return;
     }
 
     const time = Math.max(1, Math.ceil(totalSize / internetSpeed));
 
+    reservedStorage += totalSize;
     item.downloading = true;
     updateDisplay();
 
     setTimeout(() => {
+        reservedStorage -= totalSize;
         for (let i = 0; i < quantity; i++) {
             storageItems.push({
                 name: item.name,
