@@ -25,6 +25,20 @@ const uiIcons = {
     lvl8: 'assets/storagelvl8.png',
 }
 
+function getStorageIcon() {
+    switch(currentStorageIndex) {
+        case 0: return uiIcons.lvl1;
+        case 1: return uiIcons.lvl2;
+        case 2: return uiIcons.lvl3;
+        case 3: return uiIcons.lvl4;
+        case 4: return uiIcons.lvl5;
+        case 5: return uiIcons.lvl6;
+        case 6: return uiIcons.lvl7;
+        case 7: return uiIcons.lvl8;
+        default: return uiIcons.lvl1;
+    }
+}
+
 const items = [
     { name: 'Junk (empty .txt)', baseSize: 0.1, level: 1, unlocked: true, multiplier: 1, downloading: false, desc: 'Worth almost nothing… but hey, it’s better than nothing.', img: 'assets/lvl1.png' },
     { name: 'Single-bit file', baseSize: 0.3, level: 1, unlocked: false, multiplier: 1.3, downloading: false, desc: 'Just a lonely 0 or 1, but rare enough to brag about.', img: 'assets/lvl2.png' },
@@ -143,8 +157,9 @@ function updateDisplay() {
     const internetEl = document.getElementById('internet-speed');
 
     if (moneyEl) moneyEl.innerHTML = `${money.toFixed(2)} <img src="${actionIcons.sell}" style="width:32px;height:32px;">`;
-    if (storageInfoEl) storageInfoEl.innerHTML = `<img src="${actionIcons.storage}" style="width:64px;height:64px;"> ${storageType} (${formatSizeFromMB(storageUsed)} used, ${formatSizeFromMB(reservedStorage)} reserved / ${formatSizeFromMB(storageCapacity)})`;
-    if (internetEl) internetEl.innerHTML = `<img src="${actionIcons.internet}" style="width:16px;height:16px;"> ${formatDataRateMBps(internetSpeed)}`;
+    if (storageInfoEl) {
+    storageInfoEl.innerHTML = `<img src="${getStorageIcon()}" style="width:64px;height:64px;"> ${storageType} (${formatSizeFromMB(storageUsed)} used, ${formatSizeFromMB(reservedStorage)} reserved / ${formatSizeFromMB(storageCapacity)})`;}
+    if (internetEl) internetEl.innerHTML = `<img src="${uiIcons.internet}" style="width:16px;height:16px;"> ${formatDataRateMBps(internetSpeed)}`;
 
     renderBulkControls();
     renderDownloads();
@@ -160,13 +175,13 @@ function updateDisplay() {
         if (showStorage) {
             downloadsEl.style.display = 'none';
             storageEl.style.display = 'block';
-            if (toggleBtn) toggleBtn.textContent = 'Show Downloads';
+            if (toggleBtn) toggleBtn.innerHTML = `<img src="${actionIcons.download}" style="width:16px;height:16px;">`;
             const centerTitle = document.getElementById('center-title');
             if (centerTitle) centerTitle.textContent = 'Storage';
         } else {
             downloadsEl.style.display = 'block';
             storageEl.style.display = 'none';
-            if (toggleBtn) toggleBtn.textContent = 'Show Storage';
+            if (toggleBtn) toggleBtn.innerHTML = `<img src="${getStorageIcon()}" style="width:64px;height:64px;">`;
             const centerTitle = document.getElementById('center-title');
             if (centerTitle) centerTitle.textContent = 'Downloads';
         }
