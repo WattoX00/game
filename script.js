@@ -1,8 +1,10 @@
-let money = 0;
+let money = 1000000000;
 let storageCapacity = 1.44;
 let storageUsed = 0;
 let internetSpeed = 0.02;
 let storageType = 'Floppy Disk';
+let currentBulkQuantity = 1;
+const bulkOptions = [1,5,10,25];
 
 const items = [
     { name: 'Junk (empty .txt)', baseSize: 0.1, level: 1, unlocked: true, multiplier: 1, downloading: false, desc: 'Worth almost nothing… but hey, it’s better than nothing.' },
@@ -88,6 +90,7 @@ function updateDisplay() {
     document.getElementById('storage-info').textContent = `Storage: ${storageType} (${storageCapacity} MB used: ${storageUsed.toFixed(2)} MB)`;
     document.getElementById('internet-speed').textContent = `Internet Speed: ${(internetSpeed * 1000).toFixed(1)} kb/s`;
     
+    renderBulkControls();
     renderDownloads();
     renderStorage();
     renderUpgrades();
@@ -109,7 +112,9 @@ function renderDownloads() {
     items.forEach((item, index) => {
         if (item.unlocked) {
             const size = item.baseSize * Math.pow(1.2, item.level - 1);
-            const time = Math.max(1, Math.ceil(size / internetSpeed));
+            const quantity = currentBulkQuantity;
+            const totalSize = size * quantity;
+            const time = Math.max(1, Math.ceil(totalSize / internetSpeed));
             const div = document.createElement('div');
             div.className = 'item';
             div.style.position = 'relative';
@@ -125,8 +130,8 @@ function renderDownloads() {
                 <p>${item.name} (Level ${item.level})</p>
                 <p>Size: ${size.toFixed(2)} MB</p>
 
-                <button onclick="downloadItem(${index})" ${item.downloading ? 'disabled' : ''}>
-                    ${item.downloading ? 'Downloading...' : `Download (${Math.floor(time)}s)`}
+                <button onclick="bulkDownloadItem(${index}, ${quantity})" ${item.downloading ? 'disabled' : ''}>
+                    ${item.downloading ? 'Downloading...' : `Download x${quantity} (${Math.floor(time)}s)`}
                 </button>
 
                 <button onclick="upgradeItem(${index})">
@@ -144,6 +149,29 @@ function renderDownloads() {
             downloadsDiv.appendChild(div);
         }
     });
+}
+
+function renderBulkControls() {
+    const bcDiv = document.getElementById('bulk-controls');
+    if (!bcDiv) return;
+    const bulkUnlocked = items[8] && items[8].unlocked;
+    if (!bulkUnlocked) {
+        bcDiv.innerHTML = '';
+        return;
+    }
+    const optionsHtml = bulkOptions.map(o => `<option value="${o}" ${o === currentBulkQuantity ? 'selected' : ''}>${o}x</option>`).join('');
+    bcDiv.innerHTML = `
+        <label style="font-size:14px;">Download Amount:
+            <select id="bulk-select" onchange="setBulkQuantity(parseInt(this.value))">
+                ${optionsHtml}
+            </select>
+        </label>
+    `;
+}
+
+function setBulkQuantity(q) {
+    currentBulkQuantity = q;
+    updateDisplay();
 }
 
 let pinnedInfoIndex = null;
@@ -182,6 +210,12 @@ function hideItemInfo(index) {
 function renderStorage() {
     const storageDiv = document.getElementById('storage');
     storageDiv.innerHTML = '';
+    const formatUnlocked = items[5] && items[5].unlocked;
+    const controls = document.createElement('div');
+    controls.style.marginBottom = '6px';
+    controls.innerHTML = `<button onclick="formatDisk()" ${formatUnlocked ? '' : 'disabled'}>Format Disk (Sell All)</button>`;
+    storageDiv.appendChild(controls);
+
     storageItems.forEach((item, index) => {
         const div = document.createElement('div');
         div.className = 'item';
@@ -392,6 +426,27 @@ function finishPrint() {
     }
 }
 
+function formatDisk() {
+    const formatUnlocked = items[5] && items[5].unlocked;
+    if (!formatUnlocked) {
+        alert('Format Disk not unlocked yet!');
+        return;
+    }
+    if (storageItems.length === 0) {
+        alert('Storage is already empty!');
+        return;
+    }
+
+    let total = 0;
+    for (const it of storageItems) {
+        total += getSellPriceGlobal(it);
+    }
+    money += total;
+    storageItems.length = 0;
+    storageUsed = 0;
+    updateDisplay();
+}
+
 function getPrinterUpgradeCost() {
     return Math.floor(250 * Math.pow(2, printerUpgradeLevel));
 }
@@ -478,33 +533,38 @@ function getStorageCost(index) {
 }
 
 function downloadItem(index) {
+    bulkDownloadItem(index, 1);
+}
+function bulkDownloadItem(index, quantity = currentBulkQuantity) {
     const item = items[index];
-
+    if (!item) return;
     if (item.downloading) return;
 
-    const size = item.baseSize * Math.pow(1.2, item.level - 1);
+    const sizeEach = item.baseSize * Math.pow(1.2, item.level - 1);
+    const totalSize = sizeEach * quantity;
 
-    if (storageUsed + size > storageCapacity) {
+    if (storageUsed + totalSize > storageCapacity) {
         alert('Not enough storage space!');
         return;
     }
 
-    const time = Math.max(1, Math.ceil(size / internetSpeed));
+    const time = Math.max(1, Math.ceil(totalSize / internetSpeed));
 
     item.downloading = true;
     updateDisplay();
 
     setTimeout(() => {
-        storageItems.push({
-            name: item.name,
-            size: size,
-            level: item.level,
-            multiplier: item.multiplier
-        });
+        for (let i = 0; i < quantity; i++) {
+            storageItems.push({
+                name: item.name,
+                size: sizeEach,
+                level: item.level,
+                multiplier: item.multiplier
+            });
+            storageUsed += sizeEach;
+        }
 
-        storageUsed += size;
         item.downloading = false;
-
         updateDisplay();
     }, time * 1000);
 }
