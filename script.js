@@ -1,4 +1,4 @@
-let money = 1000000000;
+let money = 0;
 let storageCapacity = 1.44;
 let storageUsed = 0;
 let internetSpeed = 0.02;
@@ -525,7 +525,7 @@ function upgradeItem(index) {
     const item = items[index];
 
     function getUpgradeCost(index, level) {
-        const baseCost = 25;
+        const baseCost = 1;
         const itemTierScale = Math.pow(3, index);
         const levelScale = Math.pow(1.4, level - 1);
 
@@ -540,11 +540,11 @@ function upgradeItem(index) {
 
         if (item.level >= 5 && index + 1 < items.length) {
             items[index + 1].unlocked = true;
-            if (index + 1 === 3) {
+            if (index + 1 === 2) {
                 blackMarketUnlocked = true;
                 startBlackMarket();
             }
-            if (index + 1 === 5) {
+            if (index + 1 === 3) {
                 printerUnlocked = true;
                 alert('Printer unlocked!');
             }
