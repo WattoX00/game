@@ -190,15 +190,16 @@ function renderDownloads() {
                     style="position:absolute; font-size:12px; padding:2px 6px; top:5px; right:5px;"
                 >ℹ️</button>
 
+                <img src="${item.img}" alt="${item.name}" style="width:40px;height:40px;margin-right:6px;vertical-align:middle;">
                 <p>${item.name} (Level ${item.level})</p>
                 <p>Size: ${formatSizeFromMB(size)}</p>
 
                 <button onclick="bulkDownloadItem(${index}, ${quantity})" ${item.downloading ? 'disabled' : ''}>
-                    ${item.downloading ? 'Downloading...' : `Download x${quantity} (${Math.floor(time)}s)`}
+                            <img src="${actionIcons.download}" style="width:16px;height:16px;">${item.downloading ? 'Downloading...' : `x${quantity} (${Math.floor(time)}s)`}
                 </button>
 
                 <button onclick="upgradeItem(${index})">
-                    Upgrade ($${getUpgradeCost(index, item.level)})
+                    <img src="${actionIcons.levelup}" style="width:16px;height:16px;">$${getUpgradeCost(index, item.level)}
                 </button>
 
                 <div id="info-${index}" 
@@ -299,7 +300,7 @@ function renderStorage() {
         div.className = 'item';
         const price = getSellPriceGlobal(item);
 
-        let buttons = `<button onclick="sellItem(${index})">Sell ($${price.toFixed(2)})</button>`;
+        let buttons = `<button onclick="sellItem(${index})"><img src="${actionIcons.sell}" style="width:32px;height:32px;">$${price.toFixed(2)}</button>`;
 
         if (printerUnlocked) {
             buttons += ` <button onclick="startPrintFromStorage(${index})">Print</button>`;
@@ -311,6 +312,8 @@ function renderStorage() {
         }
 
         div.innerHTML = `
+            <img src="${item.img}" alt="${item.name}" 
+                style="width:40px; height:40px; margin-right:6px; vertical-align:middle;">
             <p>${item.name} (Level ${item.level})</p>
             <p>Size: ${formatSizeFromMB(item.size)}</p>
             ${buttons}
@@ -491,7 +494,8 @@ function finishPrint() {
                 name: printerItem.name,
                 size: printerItem.size,
                 level: printerItem.level,
-                multiplier: printerItem.multiplier
+                multiplier: printerItem.multiplier,
+                img: printerItem.img
             });
             storageUsed += printerItem.size;
         } else {
@@ -683,7 +687,8 @@ function bulkDownloadItem(index, quantity = currentBulkQuantity) {
                 name: item.name,
                 size: sizeEach,
                 level: item.level,
-                multiplier: item.multiplier
+                multiplier: item.multiplier,
+                img: item.img
             });
             storageUsed += sizeEach;
         }
