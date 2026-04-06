@@ -1,4 +1,4 @@
-let money = 100000;
+let money = 1000000;
 let storageCapacity = 1.44;
 let storageUsed = 0;
 let internetSpeed = 0.02;
@@ -77,7 +77,7 @@ function renderDownloads() {
     items.forEach((item, index) => {
         if (item.unlocked) {
             const size = item.baseSize * Math.pow(1.2, item.level - 1);
-            const time = size / internetSpeed;
+            const time = Math.floor(size / internetSpeed);
 
             const div = document.createElement('div');
             div.className = 'item';
@@ -95,11 +95,11 @@ function renderDownloads() {
                 <p>Size: ${size.toFixed(2)} MB</p>
 
                 <button onclick="downloadItem(${index})" ${item.downloading ? 'disabled' : ''}>
-                    ${item.downloading ? 'Downloading...' : `Download (${time.toFixed(1)}s)`}
+                    ${item.downloading ? 'Downloading...' : `Download (${Math.floor(time)}s)`}
                 </button>
 
                 <button onclick="upgradeItem(${index})">
-                    Upgrade ($${(Math.pow(1.5, item.level - 1)).toFixed(2)})
+                    Upgrade ($${Math.floor(Math.pow(1.5, item.level - 1))})
                 </button>
 
                 <div id="info-${index}" 
@@ -210,7 +210,7 @@ function renderUpgrades() {
         div.className = 'upgrade';
         div.innerHTML = `
             <p>Upgrade Black Market Multiplier to ${(blackMarketMultiplier + 0.1).toFixed(1)}x</p>
-            <button onclick="upgradeBlackMarket()">Buy ($${cost.toFixed(2)})</button>
+            <button onclick="upgradeBlackMarket()">Buy $${Math.floor(cost)}</button>
         `;
         upgradesDiv.appendChild(div);
     }
@@ -229,7 +229,7 @@ function renderBlackMarket() {
     const seconds = Math.floor((timeLeft % 60000) / 1000);
 
     bmDiv.innerHTML = `
-        <p>Current Boost: ${boostedName} (${blackMarketMultiplier}x)</p>
+        <p>Current Boost: ${boostedName} (${blackMarketMultiplier.toFixed(1)}x)</p>
         <p>Next boost in: ${minutes}:${seconds.toString().padStart(2, '0')}</p>
     `;
 }
@@ -246,7 +246,7 @@ function downloadItem(index) {
         return;
     }
 
-    const time = size / internetSpeed;
+    const time = Math.floor(size / internetSpeed);
 
     item.downloading = true;
     updateDisplay();
@@ -283,7 +283,7 @@ function upgradeItem(index) {
 
     const baseCost = 1;
     const growth = 1.5;
-    const cost = baseCost * Math.pow(growth, item.level - 1);
+    const cost = Math.floor(baseCost * Math.pow(growth, item.level - 1));
 
     if (money >= cost) {
         money -= cost;
@@ -365,7 +365,7 @@ function upgradeBlackMarket() {
     const cost = Math.pow(2, Math.floor((blackMarketMultiplier - 2) / 0.1)) * 100;
     if (money >= cost) {
         money -= cost;
-        blackMarketMultiplier += 0.1;
+        blackMarketMultiplier = Math.round((blackMarketMultiplier + 0.1) * 10) / 10;
         updateDisplay();
     } else {
         alert('Not enough money!');
