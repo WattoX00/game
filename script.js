@@ -157,9 +157,24 @@ function renderStorage() {
         div.innerHTML = `
             <p>${item.name} (Level ${item.level})</p>
             <p>Size: ${item.size.toFixed(3)} MB</p>
-            <button onclick="sellItem(${index})">Sell ($${(item.size * item.multiplier * 0.5).toFixed(2)})</button>
-        `;
-        storageDiv.appendChild(div);
+            `;
+        let price = item.size * item.multiplier * 0.5;
+
+            if (
+                boostedItemIndex !== null &&
+                item.name === items[boostedItemIndex].name
+            ) {
+                price *= blackMarketMultiplier;
+            }
+
+            div.innerHTML = `
+                <p>${item.name} (Level ${item.level})</p>
+                <p>Size: ${item.size.toFixed(3)} MB</p>
+                <button onclick="sellItem(${index})">
+                    Sell ($${price.toFixed(2)})
+                </button>
+            `;
+    storageDiv.appendChild(div);
         });
 }
 
@@ -224,7 +239,7 @@ function downloadItem(index) {
 
     if (item.downloading) return;
 
-    const size = item.baseSize * item.level;
+    const size = item.baseSize * Math.pow(1.2, item.level - 1);
 
     if (storageUsed + size > storageCapacity) {
         alert('Not enough storage space!');
@@ -314,17 +329,21 @@ function upgradeStorage() {
 }
 
 function startBlackMarket() {
+    if (boostTimer) return;
+
     selectRandomBoost();
+
     boostTimer = setInterval(() => {
-        resetBoost();
         selectRandomBoost();
-    }, 300000); // 5 minutes
+    }, 30000);
+
     countdownInterval = setInterval(() => {
         renderBlackMarket();
     }, 1000);
 }
 
 function resetBoost() {
+    previousBoostedItem = boostedItemIndex;
     boostedItemIndex = null;
 }
 
