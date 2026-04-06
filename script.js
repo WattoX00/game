@@ -604,7 +604,7 @@ function upgradeItem(index) {
                 blackMarketUnlocked = true;
                 startBlackMarket();
             }
-            if (index + 1 === 3) {
+            if (index + 1 === 4) {
                 printerUnlocked = true;
             }
         }
