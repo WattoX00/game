@@ -3,7 +3,7 @@ body {
     margin: 20px;
 }
 
-h1, h2 {
+h2 {
     color: #333;
 }
 
@@ -18,16 +18,54 @@ button {
     cursor: pointer;
 }
 
+.layout {
+    display: grid;
+    grid-template-columns: 20% 60% 20%;
+    gap: 12px;
+    height: calc(100vh - 80px);
+}
+
+.left-col, .center-col, .right-col {
+    padding: 10px;
+    border: 1px solid #e0e0e0;
+    border-radius: 6px;
+    background: #fafafa;
+    overflow-y: auto;
+}
+
+.view-toggle {
+    width: 100%;
+    margin-bottom: 8px;
+}
+
+.center-col .item {
+    display: block;
+    width: 100%;
+    box-sizing: border-box;
+    margin: 6px 0;
+}
+
 .item {
     border: 1px solid #ccc;
     padding: 10px;
     margin: 5px;
-    display: inline-block;
 }
 
 .upgrade {
     border: 1px solid #ccc;
     padding: 10px;
-    margin: 5px;
+    margin: 5px 0;
+    display: block;
+}
+
+.storage-row {
+    display: flex;
+    gap: 8px;
+    overflow-x: auto;
+    padding-top: 8px;
+}
+
+.storage-row .item {
     display: inline-block;
+    min-width: 140px;
 }

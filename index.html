@@ -7,29 +7,33 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <h1>Byte Collector</h1>
-    <div id="money">Money: $0</div>
-    <div id="storage-info">Storage: Floppy Disk (1.44 MB used: 0 MB)</div>
-    <div id="internet-speed">Internet Speed: 0.1 kb/s</div>
-    
-    <h2>Download Amount</h2>
-    <div id="bulk-controls"></div>
 
-    <h2>Downloads</h2>
-    <div id="downloads"></div>
-    
-    <h2>Storage</h2>
-    <div id="storage"></div>
-    
-    <h2>Upgrades</h2>
-    <div id="upgrades"></div>
-    
-    <h2>Black Market</h2>
-    <div id="black-market"></div>
-    
-    <h2>Printer</h2>
-    <div id="printer"></div>
-    
+    <div class="layout" id="layout">
+        <aside id="left-column" class="left-col">
+            <button id="view-toggle" onclick="toggleView()" class="view-toggle">Show Storage</button>
+            <div id="menu">
+                <div id="money">Money: $0</div>
+                <div id="storage-info">Storage: Floppy Disk (1.44 MB used: 0 MB)</div>
+                <div id="internet-speed">Internet Speed: 0.1 kb/s</div>
+                <div id="bulk-controls"></div>
+                <div id="black-market"></div>
+                <div id="printer"></div>
+            </div>
+        </aside>
+
+        <main id="center-column" class="center-col">
+            <h2 id="center-title">Downloads</h2>
+            <div id="downloads"></div>
+
+            <div id="storage" style="display:none;"></div>
+        </main>
+
+        <aside id="right-column" class="right-col">
+            <h2>Upgrades</h2>
+            <div id="upgrades"></div>
+        </aside>
+    </div>
+
     <script src="script.js"></script>
 </body>
 </html>

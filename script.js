@@ -51,6 +51,7 @@ const internetSpeeds = [
 
 let currentInternetLevel = 1;
 let currentStorageIndex = 0;
+let showStorage = false;
 
 const storageItems = [];
 
@@ -119,16 +120,39 @@ function getSellPriceGlobal(item) {
 }
 
 function updateDisplay() {
-    document.getElementById('money').textContent = `Money: $${money.toFixed(2)}`;
-    document.getElementById('storage-info').textContent = `Storage: ${storageType} (${formatSizeFromMB(storageUsed)} used, ${formatSizeFromMB(reservedStorage)} reserved / ${formatSizeFromMB(storageCapacity)})`;
-    document.getElementById('internet-speed').textContent = `Internet Speed: ${formatDataRateMBps(internetSpeed)}`;
-    
+    const moneyEl = document.getElementById('money');
+    const storageInfoEl = document.getElementById('storage-info');
+    const internetEl = document.getElementById('internet-speed');
+
+    if (moneyEl) moneyEl.textContent = `Money: $${money.toFixed(2)}`;
+    if (storageInfoEl) storageInfoEl.textContent = `Storage: ${storageType} (${formatSizeFromMB(storageUsed)} used, ${formatSizeFromMB(reservedStorage)} reserved / ${formatSizeFromMB(storageCapacity)})`;
+    if (internetEl) internetEl.textContent = `Internet Speed: ${formatDataRateMBps(internetSpeed)}`;
+
     renderBulkControls();
     renderDownloads();
     renderStorage();
     renderUpgrades();
     renderBlackMarket();
     renderPrinter();
+
+    const downloadsEl = document.getElementById('downloads');
+    const storageEl = document.getElementById('storage');
+    const toggleBtn = document.getElementById('view-toggle');
+    if (downloadsEl && storageEl) {
+        if (showStorage) {
+            downloadsEl.style.display = 'none';
+            storageEl.style.display = 'block';
+            if (toggleBtn) toggleBtn.textContent = 'Show Downloads';
+            const centerTitle = document.getElementById('center-title');
+            if (centerTitle) centerTitle.textContent = 'Storage';
+        } else {
+            downloadsEl.style.display = 'block';
+            storageEl.style.display = 'none';
+            if (toggleBtn) toggleBtn.textContent = 'Show Storage';
+            const centerTitle = document.getElementById('center-title');
+            if (centerTitle) centerTitle.textContent = 'Downloads';
+        }
+    }
 }
 
 function renderDownloads() {
@@ -207,6 +231,11 @@ function setBulkQuantity(q) {
     updateDisplay();
 }
 
+function toggleView() {
+    showStorage = !showStorage;
+    updateDisplay();
+}
+
 let pinnedInfoIndex = null;
 
 function toggleItemInfo(index) {
@@ -248,14 +277,23 @@ function renderStorage() {
     controls.style.marginBottom = '6px';
     controls.innerHTML = `<button onclick="formatDisk()" ${formatUnlocked ? '' : 'disabled'}>Format Disk (Sell All)</button>`;
     storageDiv.appendChild(controls);
+    const row = document.createElement('div');
+    row.className = 'storage-row';
+    storageDiv.appendChild(row);
+
+    if (storageItems.length === 0) {
+        const empty = document.createElement('div');
+        empty.textContent = 'No items in storage.';
+        storageDiv.appendChild(empty);
+        return;
+    }
 
     storageItems.forEach((item, index) => {
         const div = document.createElement('div');
         div.className = 'item';
         const price = getSellPriceGlobal(item);
 
-        let buttons = `
-            <button onclick="sellItem(${index})">Sell ($${price.toFixed(2)})</button>`;
+        let buttons = `<button onclick="sellItem(${index})">Sell ($${price.toFixed(2)})</button>`;
 
         if (printerUnlocked) {
             buttons += ` <button onclick="startPrintFromStorage(${index})">Print</button>`;
@@ -270,10 +308,10 @@ function renderStorage() {
             <p>${item.name} (Level ${item.level})</p>
             <p>Size: ${formatSizeFromMB(item.size)}</p>
             ${buttons}
-            `;
+        `;
 
-        storageDiv.appendChild(div);
-        });
+        row.appendChild(div);
+    });
 }
 
 function renderUpgrades() {
