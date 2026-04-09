@@ -44,8 +44,8 @@ const backgrounds = {
     lvl13: 'assets/backgrounds/lvl13.png'
 };
 
-function getStorageIcon() {
-    switch(currentStorageIndex) {
+function getStorageIcon(index = currentStorageIndex) {
+    switch(index) {
         case 0: return uiIcons.lvl1;
         case 1: return uiIcons.lvl2;
         case 2: return uiIcons.lvl3;
@@ -176,10 +176,11 @@ function updateDisplay() {
     const storageInfoEl = document.getElementById('storage-info');
     const internetEl = document.getElementById('internet-speed');
 
-    if (moneyEl) moneyEl.innerHTML = `${money.toFixed(2)} <img src="${actionIcons.sell}" style="width:32px;height:32px;">`;
+    if (moneyEl) moneyEl.innerHTML = `${money.toFixed(2)} <img src="${actionIcons.sell}" class="inline-icon large">`;
     if (storageInfoEl) {
-    storageInfoEl.innerHTML = `<img src="${getStorageIcon()}" style="width:32px;height:32px;"> ${storageType} (${formatSizeFromMB(storageUsed)} used, ${formatSizeFromMB(reservedStorage)} reserved / ${formatSizeFromMB(storageCapacity)})`;}
-    if (internetEl) internetEl.innerHTML = `<img src="${uiIcons.internet}" style="width:16px;height:16px;"> ${formatDataRateMBps(internetSpeed)}`;
+        storageInfoEl.innerHTML = `<img src="${getStorageIcon()}" class="inline-icon large"> ${storageType} (${formatSizeFromMB(storageUsed)} used, ${formatSizeFromMB(reservedStorage)} reserved / ${formatSizeFromMB(storageCapacity)})`;
+    }
+    if (internetEl) internetEl.innerHTML = `<img src="${uiIcons.internet}" class="inline-icon small"> ${formatDataRateMBps(internetSpeed)}`;
 
     renderBulkControls();
     renderDownloads();
@@ -195,13 +196,13 @@ function updateDisplay() {
         if (showStorage) {
             downloadsEl.style.display = 'none';
             storageEl.style.display = 'block';
-            if (toggleBtn) toggleBtn.innerHTML = `<img src="${actionIcons.download}" style="width:16px;height:16px;">`;
+            if (toggleBtn) toggleBtn.innerHTML = `<img src="${actionIcons.download}" class="inline-icon small">`;
             const centerTitle = document.getElementById('center-title');
             if (centerTitle) centerTitle.textContent = 'Storage';
         } else {
             downloadsEl.style.display = 'block';
             storageEl.style.display = 'none';
-            if (toggleBtn) toggleBtn.innerHTML = `<img src="${getStorageIcon()}" style="width:64px;height:64px;">`;
+            if (toggleBtn) toggleBtn.innerHTML = `<img src="${getStorageIcon()}" class="inline-icon xlarge">`;
             const centerTitle = document.getElementById('center-title');
             if (centerTitle) centerTitle.textContent = 'Downloads';
         }
@@ -240,24 +241,24 @@ function renderDownloads() {
                     onmouseover="showItemInfo(${index})"
                     onmouseout="hideItemInfo(${index})"
                     style="position:absolute; font-size:12px; padding:2px 6px; top:5px; right:5px;"
-                ><img src="${actionIcons.info}" style="width:16px;height:16px;"></button>
+                ><img src="${actionIcons.info}" class="inline-icon small"></button>
 
-                <img src="${item.img}" alt="${item.name}" style="width:40px;height:40px;margin-right:6px;vertical-align:middle;">
+                <img src="${item.img}" alt="${item.name}" class="item-icon">
                 <p>${item.name} (Level ${item.level})</p>
                 <p>Size: ${formatSizeFromMB(size)}</p>
 
                 <button onclick="bulkDownloadItem(${index}, ${quantity})" ${item.downloading ? 'disabled' : ''}>
-                            <img src="${actionIcons.download}" style="width:16px;height:16px;">${item.downloading ? 'Downloading...' : `x${quantity} (${Math.floor(time)}s)`}
+                            <img src="${actionIcons.download}" class="inline-icon small">${item.downloading ? 'Downloading...' : `x${quantity} (${Math.floor(time)}s)`}
                 </button>
 
                 <button onclick="upgradeItem(${index})">
-                    <img src="${actionIcons.levelup}" style="width:16px;height:16px;">$${getUpgradeCost(index, item.level)}
+                    <img src="${actionIcons.levelup}" class="inline-icon small">$${getUpgradeCost(index, item.level)}
                 </button>
 
                 <div id="info-${index}" 
                      style="display:none; position:absolute; top:25px; right:5px; 
                             background:#111; color:#fff; padding:6px; font-size:12px; 
-                            border:1px solid #444; max-width:200px; z-index:10;">
+                            border:1px solid #444; max-width:200px; z-index:9999;">
                     ${item.desc || 'No info available.'}
                 </div>
             `;
@@ -352,10 +353,10 @@ function renderStorage() {
         div.className = 'item';
         const price = getSellPriceGlobal(item);
 
-        let buttons = `<button onclick="sellItem(${index})">${price.toFixed(2)} <img src="${actionIcons.sell}" style="width:32px;height:32px;"></button>`;
+        let buttons = `<button onclick="sellItem(${index})">${price.toFixed(2)} <img src="${actionIcons.sell}" class="inline-icon large"></button>`;
 
         if (printerUnlocked) {
-            buttons += ` <button onclick="startPrintFromStorage(${index})"><img src="${uiIcons.printer}" style="width:32px;height:32px;"></button>`;
+            buttons += ` <button onclick="startPrintFromStorage(${index})"><img src="${uiIcons.printer}" class="inline-icon large"></button>`;
         }
 
         if (autobuyerBought) {
@@ -364,8 +365,7 @@ function renderStorage() {
         }
 
         div.innerHTML = `
-            <img src="${item.img}" alt="${item.name}" 
-                style="width:40px; height:40px; margin-right:6px; vertical-align:middle;">
+            <img src="${item.img}" alt="${item.name}" class="item-icon">
             <p>${item.name} (Level ${item.level})</p>
             <p>Size: ${formatSizeFromMB(item.size)}</p>
             ${buttons}
@@ -384,8 +384,8 @@ function renderUpgrades() {
         const div = document.createElement('div');
         div.className = 'upgrade';
         div.innerHTML = `
-            <p><img src="${uiIcons.internet}" style="width:32px;height:32px;"> ${formatDataRateMBps(nextInternet.speed)}</p>
-            <button onclick="upgradeInternet()">${nextInternet.cost} <img src="${actionIcons.sell}" style="width:32px;height:32px;"></button>
+            <p><img src="${uiIcons.internet}" class="inline-icon large"> ${formatDataRateMBps(nextInternet.speed)}</p>
+            <button onclick="upgradeInternet()">${nextInternet.cost} <img src="${actionIcons.sell}" class="inline-icon large"></button>
         `;
         upgradesDiv.appendChild(div);
     }
@@ -395,8 +395,8 @@ function renderUpgrades() {
         const div = document.createElement('div');
         div.className = 'upgrade';
         div.innerHTML = `
-            <p>Upgrade Storage to <img src="${getStorageIcon()}" style="width:32px;height:32px;"> ${nextStorage.name} (${formatSizeFromMB(nextStorage.capacity)})</p>
-            <button onclick="upgradeStorage()">${getStorageCost(currentStorageIndex)} <img src="${actionIcons.sell}" style="width:32px;height:32px;"></button>
+            <p>Upgrade Storage to <img src="${getStorageIcon(currentStorageIndex + 1)}" class="inline-icon large"> ${nextStorage.name} (${formatSizeFromMB(nextStorage.capacity)})</p>
+            <button onclick="upgradeStorage()">${getStorageCost(currentStorageIndex)} <img src="${actionIcons.sell}" class="inline-icon large"></button>
         `;
         upgradesDiv.appendChild(div);
     }
@@ -406,8 +406,8 @@ function renderUpgrades() {
         const div = document.createElement('div');
         div.className = 'upgrade';
         div.innerHTML = `
-            <p><img src="${uiIcons.market}" style="width:32px;height:32px;">${(blackMarketMultiplier + 0.1).toFixed(1)}x</p>
-            <button onclick="upgradeBlackMarket()">${Math.floor(cost)} <img src="${actionIcons.sell}" style="width:32px;height:32px;"></button>
+            <p><img src="${uiIcons.market}" class="inline-icon large">${(blackMarketMultiplier + 0.1).toFixed(1)}x</p>
+            <button onclick="upgradeBlackMarket()">${Math.floor(cost)} <img src="${actionIcons.sell}" class="inline-icon large"></button>
         `;
         upgradesDiv.appendChild(div);
     }
@@ -418,7 +418,7 @@ function renderUpgrades() {
         const curTime = getPrintDuration();
         divP.innerHTML = `
             <p>Decrease print time (current: ${curTime}s)</p>
-            <button onclick="buyPrinterUpgrade()">${getPrinterUpgradeCost()} <img src="${actionIcons.sell}" style="width:32px;height:32px;"></button>
+            <button onclick="buyPrinterUpgrade()">${getPrinterUpgradeCost()} <img src="${actionIcons.sell}" class="inline-icon large"></button>
         `;
         upgradesDiv.appendChild(divP);
 
@@ -428,7 +428,7 @@ function renderUpgrades() {
             d.className = 'upgrade';
             d.innerHTML = `
                 <p>Autoseller: Automatically sell duplicated items</p>
-                <button onclick="buyAutoseller()">${cost} <img src="${actionIcons.sell}" style="width:32px;height:32px;"></button>
+                <button onclick="buyAutoseller()">${cost} <img src="${actionIcons.sell}" class="inline-icon large"></button>
             `;
             upgradesDiv.appendChild(d);
         }
@@ -439,7 +439,7 @@ function renderUpgrades() {
             d.className = 'upgrade';
             d.innerHTML = `
                 <p>Autobuyer: Requeue an item to print again automatically</p>
-                <button onclick="buyAutobuyer()">${cost} <img src="${actionIcons.sell}" style="width:32px;height:32px;"></button>
+                <button onclick="buyAutobuyer()">${cost} <img src="${actionIcons.sell}" class="inline-icon large"></button>
             `;
             upgradesDiv.appendChild(d);
         }
@@ -450,7 +450,7 @@ function renderUpgrades() {
             d.className = 'upgrade';
             d.innerHTML = `
                 <p>Double Print Chance: 20% chance to print 2 copies</p>
-                <button onclick="buyDoublePrint()">${cost} <img src="${actionIcons.sell}" style="width:32px;height:32px;"></button>
+                <button onclick="buyDoublePrint()">${cost} <img src="${actionIcons.sell}" class="inline-icon large"></button>
             `;
             upgradesDiv.appendChild(d);
         }
@@ -461,7 +461,7 @@ function renderUpgrades() {
             d2.className = 'upgrade';
             d2.innerHTML = `
                 <p>Increase Double Print Chance (+4% per upgrade). Current: ${(getDoublePrintChance()*100).toFixed(1)}%</p>
-                <button onclick="buyDoublePrintUpgrade()">${cost} <img src="${actionIcons.sell}" style="width:32px;height:32px;"></button>
+                <button onclick="buyDoublePrintUpgrade()">${cost} <img src="${actionIcons.sell}" class="inline-icon large"></button>
             `;
             upgradesDiv.appendChild(d2);
         }
@@ -485,7 +485,7 @@ function renderPrinter() {
     } else {
         const queued = autobuyerBought && autobuyerQueueName ? autobuyerQueueName : 'None';
         let html = '';
-        html += `<img src="${uiIcons.printer}" style="width:32px;height:32px;">`;
+        html += `<img src="${uiIcons.printer}" class="inline-icon large">`;
         html += `<p>Print Duration: ${getPrintDuration()}s</p>`;
         html += `<p>Autobuyer Queue: ${queued}</p>`;
         if (autosellerBought) {
@@ -701,7 +701,7 @@ function renderBlackMarket() {
     const seconds = Math.floor((timeLeft % 60000) / 1000);
 
     bmDiv.innerHTML = `
-        <p><img src="${uiIcons.market}" style="width:32px;height:32px;"> ${boostedName} (${blackMarketMultiplier.toFixed(1)}x)</p>
+        <p><img src="${uiIcons.market}" class="inline-icon large"> ${boostedName} (${blackMarketMultiplier.toFixed(1)}x)</p>
         <p>Next boost in: ${minutes}:${seconds.toString().padStart(2, '0')}</p>
     `;
 }
