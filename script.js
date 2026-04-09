@@ -35,10 +35,10 @@ const backgrounds = {
     lvl4: 'assets/backgrounds/lvl4.png',
     lvl5: 'assets/backgrounds/lvl5.gif',
     lvl6: 'assets/backgrounds/lvl6.png',
-    lvl7: 'assets/backgrounds/lvl7.png',
+    lvl7: 'assets/backgrounds/lvl7.jpeg',
     lvl8: 'assets/backgrounds/lvl8.png',
     lvl9: 'assets/backgrounds/lvl9.png',
-    lvl10: 'assets/backgrounds/lvl10.png',
+    lvl10: 'assets/backgrounds/lvl10.gif',
     lvl11: 'assets/backgrounds/lvl11.png',
     lvl12: 'assets/backgrounds/lvl12.png',
     lvl13: 'assets/backgrounds/lvl13.png'
