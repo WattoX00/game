@@ -74,21 +74,14 @@ button {
     min-width: 140px;
 }
 
-#center-column {
-
-}
-
-/* Icon sizing and alignment */
 .inline-icon { vertical-align: middle; display: inline-block; margin-left: 6px; }
 .inline-icon.small { width: 16px; height: 16px; }
 .inline-icon.medium { width: 20px; height: 20px; }
 .inline-icon.large { width: 32px; height: 32px; }
 .inline-icon.xlarge { width: 64px; height: 64px; }
 
-/* Item icon styling */
 .item-icon { width: 40px; height: 40px; margin-right: 6px; vertical-align: middle; border-radius: 4px; background: rgba(255,255,255,0.95); padding: 2px; box-shadow: 0 2px 6px rgba(0,0,0,0.3); }
 
-/* Make item text readable over background images */
 .center-col .item, .storage-row .item { position: relative; overflow: hidden; color: #fff; }
 .center-col .item::before, .storage-row .item::before {
     content: "";
@@ -99,8 +92,6 @@ button {
 }
 .center-col .item > *, .storage-row .item > * { position: relative; z-index: 1; color: #fff; }
 
-/* Make tooltips sit above overlays */
 .center-col .item [id^="info-"] { z-index: 9999; }
 
-/* Keep left/right/upgrade panels with dark text for contrast */
 .left-col, .right-col, .upgrade, #menu, #upgrades, #printer, #black-market { color: #222; }
