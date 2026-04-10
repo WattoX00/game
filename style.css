@@ -1,22 +1,73 @@
+:root {
+    --panel-bg: rgba(255,255,255,0.68);
+    --panel-border: rgba(15,23,42,0.06);
+    --card-bg: rgba(255,255,255,0.6);
+    --accent: #2b8af7;
+    --muted: #6b7280;
+    --btn-text: #0f172a;
+}
+
 body {
     font-family: Arial, sans-serif;
     margin: 20px;
     background: url(assets/backgrounds/bg.png);
+    background-size: cover;
+    background-position: center;
+    color: #111;
 }
 
 h2 {
-    color: #333;
+    color: #111;
+    font-size: 18px;
+    margin: 0 0 10px 0;
 }
 
 #money, #storage-info, #internet-speed {
-    font-size: 18px;
-    margin-bottom: 10px;
+    font-size: 16px;
+    margin-bottom: 0;
 }
 
 button {
-    padding: 10px;
-    margin: 5px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 12px;
+    margin: 6px 4px;
     cursor: pointer;
+    border-radius: 8px;
+    border: 1px solid var(--panel-border);
+    background: linear-gradient(180deg, rgba(255,255,255,0.98), rgba(245,247,250,0.95));
+    color: var(--btn-text);
+    font-weight: 600;
+    box-shadow: 0 1px 2px rgba(2,6,23,0.04);
+    transition: transform 120ms ease, box-shadow 120ms ease, background 120ms ease;
+}
+
+button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(15,23,42,0.08);
+}
+
+button:active {
+    transform: translateY(0);
+}
+
+button:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+button img.inline-icon,
+button img.inline-icon.large,
+button img.inline-icon.medium,
+button img.inline-icon.small {
+    width: 18px;
+    height: 18px;
+    margin-left: 0;
+    margin-right: 6px;
+    vertical-align: middle;
 }
 
 .layout {
@@ -27,16 +78,19 @@ button {
 }
 
 .left-col, .center-col, .right-col {
-    padding: 10px;
-    border: 1px solid #e0e0e0;
-    border-radius: 6px;
-    background: #fafafa;
+    padding: 12px;
+    border: 1px solid var(--panel-border);
+    border-radius: 10px;
+    background: var(--panel-bg);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
     overflow-y: auto;
 }
 
 .view-toggle {
     width: 100%;
     margin-bottom: 8px;
+    display: inline-block;
 }
 
 .center-col .item {
@@ -47,19 +101,23 @@ button {
 }
 
 .item {
-    border: 1px solid #ccc;
-    padding: 10px;
-    margin: 5px;
+    border: 1px solid rgba(0,0,0,0.08);
+    padding: 12px;
+    margin: 6px 0;
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
+    border-radius: 8px;
+    overflow: hidden;
 }
 
 .upgrade {
-    border: 1px solid #ccc;
+    border: 1px solid rgba(0,0,0,0.06);
     padding: 10px;
-    margin: 5px 0;
+    margin: 8px 0;
     display: block;
+    border-radius: 8px;
+    background: rgba(255,255,255,0.7);
 }
 
 .storage-row {
@@ -86,18 +144,55 @@ button {
 .inline-icon.large { width: 32px; height: 32px; }
 .inline-icon.xlarge { width: 64px; height: 64px; }
 
-.item-icon { width: 40px; height: 40px; margin-right: 6px; vertical-align: middle; border-radius: 4px; background: rgba(255,255,255,0.95); padding: 2px; box-shadow: 0 2px 6px rgba(0,0,0,0.3); }
+.item-icon { width: 40px; height: 40px; margin-right: 6px; vertical-align: middle; border-radius: 6px; background: rgba(255,255,255,0.95); padding: 4px; box-shadow: 0 2px 6px rgba(0,0,0,0.12); }
 
 .center-col .item, .storage-row .item { position: relative; overflow: hidden; color: #fff; }
 .center-col .item::before, .storage-row .item::before {
     content: "";
     position: absolute;
     inset: 0;
-    background: rgba(0,0,0,0.45);
+    background: rgba(0,0,0,0.35);
     z-index: 0;
 }
 .center-col .item > *, .storage-row .item > * { position: relative; z-index: 1; color: #fff; }
 
 .center-col .item [id^="info-"] { z-index: 9999; }
+
+#menu {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+#menu > div {
+    padding: 10px 12px;
+    background: rgba(255,255,255,0.72);
+    border-radius: 8px;
+    border: 1px solid var(--panel-border);
+    box-shadow: 0 2px 6px rgba(2,6,23,0.03);
+    color: #111;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-weight: 700;
+}
+
+#bulk-controls {
+    padding: 6px 0;
+    display: block;
+    background: transparent;
+    border: none;
+    box-shadow: none;
+}
+
+#black-market, #printer {
+    font-weight: 600;
+    font-size: 14px;
+    color: #222;
+}
+
+#upgrades {
+    color: #222;
+}
 
 .left-col, .right-col, .upgrade, #menu, #upgrades, #printer, #black-market { color: #222; }
