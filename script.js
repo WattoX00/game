@@ -67,7 +67,7 @@ const items = [
     { name: 'HD Movie', baseSize: 48, level: 1, unlocked: false, multiplier: 3, downloading: false, desc: '', img: 'assets/items/lvl6.png' },
     { name: 'Cs 1.6', baseSize: 120, level: 1, unlocked: false, multiplier: 3.5, downloading: false, desc: '', img: 'assets/items/lvl7.png' },
     { name: 'Government files', baseSize: 300, level: 1, unlocked: false, multiplier: 4.5, downloading: false, desc: 'Top secret, highly dangerous, incredibly valuable.', img: 'assets/items/lvl8.png' },
-    { name: 'Encryption keys', baseSize: 800, level: 1, unlocked: false, multiplier: 6, downloading: false, desc: 'Unlock everything… if you dare.', img: 'assets/items/lvl9.jpeg' },
+    { name: 'Encryption keys', baseSize: 800, level: 1, unlocked: false, multiplier: 6, downloading: false, desc: 'Unlock everything… if you dare.', img: 'assets/items/lvl9.png' },
     { name: 'AI models', baseSize: 2000, level: 1, unlocked: false, multiplier: 8, downloading: false, desc: 'Artificial minds ready for your command.', img: 'assets/items/lvl10.png' },
     { name: 'Alien signals', baseSize: 6000, level: 1, unlocked: false, multiplier: 12, downloading: false, desc: 'Messages from somewhere, maybe not friendly.', img: 'assets/items/lvl11.png' },
     { name: 'The Galaxy Archive', baseSize: 20000, level: 1, unlocked: false, multiplier: 20, downloading: false, desc: 'Star systems, civilizations, cosmic secrets… all yours.', img: 'assets/items/lvl12.png' },
