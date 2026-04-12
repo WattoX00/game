@@ -12,12 +12,12 @@ const actionIcons = {
     levelup: 'assets/actions/levelup.png',
     download: 'assets/actions/download.png',
     info: 'assets/actions/information.png',
+    internet: 'assets/actions/internet.png',
+    printer: 'assets/actions/printer.png',
+    market: 'assets/actions/market.png',
 };
 
 const uiIcons = {
-    internet: 'assets/internet.png',
-    printer: 'assets/printer.png',
-    market: 'assets/market.png',
     lvl1: 'assets/storages/lvl1.png',
     lvl2: 'assets/storages/lvl2.png',
     lvl3: 'assets/storages/lvl3.png',
@@ -188,7 +188,7 @@ function updateDisplay() {
     if (storageInfoEl) {
         storageInfoEl.innerHTML = `<img src="${getStorageIcon()}" class="inline-icon large"> ${storageType} (${formatSizeFromMB(storageUsed)} used, ${formatSizeFromMB(reservedStorage)} reserved / ${formatSizeFromMB(storageCapacity)})`;
     }
-    if (internetEl) internetEl.innerHTML = `<img src="${uiIcons.internet}" class="inline-icon small"> ${formatDataRateMBps(internetSpeed)}`;
+    if (internetEl) internetEl.innerHTML = `<img src="${actionIcons.internet}" class="inline-icon small"> ${formatDataRateMBps(internetSpeed)}`;
 
     renderBulkControls();
     renderDownloads();
@@ -358,7 +358,7 @@ function renderStorage() {
         let buttons = `<button onclick="sellItem(${index})">${price.toFixed(2)} <img src="${actionIcons.sell}" class="inline-icon large"></button>`;
 
         if (printerUnlocked) {
-            buttons += ` <button onclick="startPrintFromStorage(${index})"><img src="${uiIcons.printer}" class="inline-icon large"></button>`;
+            buttons += ` <button onclick="startPrintFromStorage(${index})"><img src="${actionIcons.printer}" class="inline-icon large"></button>`;
         }
 
         if (autobuyerBought) {
@@ -386,7 +386,7 @@ function renderUpgrades() {
         const div = document.createElement('div');
         div.className = 'upgrade';
         div.innerHTML = `
-            <p><img src="${uiIcons.internet}" class="inline-icon large"> ${formatDataRateMBps(nextInternet.speed)}</p>
+            <p><img src="${actionIcons.internet}" class="inline-icon large"> ${formatDataRateMBps(nextInternet.speed)}</p>
             <button onclick="upgradeInternet()">${nextInternet.cost} <img src="${actionIcons.sell}" class="inline-icon large"></button>
         `;
         upgradesDiv.appendChild(div);
@@ -408,7 +408,7 @@ function renderUpgrades() {
         const div = document.createElement('div');
         div.className = 'upgrade';
         div.innerHTML = `
-            <p><img src="${uiIcons.market}" class="inline-icon large">${(blackMarketMultiplier + 0.1).toFixed(1)}x</p>
+            <p><img src="${actionIcons.market}" class="inline-icon large">${(blackMarketMultiplier + 0.1).toFixed(1)}x</p>
             <button onclick="upgradeBlackMarket()">${Math.floor(cost)} <img src="${actionIcons.sell}" class="inline-icon large"></button>
         `;
         upgradesDiv.appendChild(div);
@@ -487,7 +487,7 @@ function renderPrinter() {
     } else {
         const queued = autobuyerBought && autobuyerQueueName ? autobuyerQueueName : 'None';
         let html = '';
-        html += `<img src="${uiIcons.printer}" class="inline-icon large">`;
+        html += `<img src="${actionIcons.printer}" class="inline-icon large">`;
         html += `<p>Print Duration: ${getPrintDuration()}s</p>`;
         html += `<p>Autobuyer Queue: ${queued}</p>`;
         if (autosellerBought) {
@@ -703,7 +703,7 @@ function renderBlackMarket() {
     const seconds = Math.floor((timeLeft % 60000) / 1000);
 
     bmDiv.innerHTML = `
-        <p><img src="${uiIcons.market}" class="inline-icon large"> ${boostedName} (${blackMarketMultiplier.toFixed(1)}x)</p>
+        <p><img src="${actionIcons.market}" class="inline-icon large"> ${boostedName} (${blackMarketMultiplier.toFixed(1)}x)</p>
         <p>Next boost in: ${minutes}:${seconds.toString().padStart(2, '0')}</p>
     `;
 }
