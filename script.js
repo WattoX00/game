@@ -171,6 +171,14 @@ function getSellPriceGlobal(item) {
     return price;
 }
 
+function getItemUpgradeCost(index, level) {
+    const baseCost = 1;
+    const itemTierScale = Math.pow(2.8, index);
+    const levelScale = Math.pow(1.45, Math.max(0, level - 1));
+    const latePenalty = level > 6 ? Math.pow(1.18, (level - 6)) : 1;
+    return Math.floor(baseCost * itemTierScale * levelScale * latePenalty);
+}
+
 function updateDisplay() {
     const moneyEl = document.getElementById('money');
     const storageInfoEl = document.getElementById('storage-info');
@@ -212,13 +220,6 @@ function updateDisplay() {
 function renderDownloads() {
     const downloadsDiv = document.getElementById('downloads');
     downloadsDiv.innerHTML = '';
-    function getUpgradeCost(index, level) {
-        const baseCost = 1;
-        const itemTierScale = Math.pow(3, index);
-        const levelScale = Math.pow(1.4, level - 1);
-
-        return Math.floor(baseCost * itemTierScale * levelScale);
-    }
 
     items.forEach((item, index) => {
         if (item.unlocked) {
@@ -233,8 +234,9 @@ function renderDownloads() {
 
             if (backgrounds[bgKey]) {
                 div.style.backgroundImage = `url(${backgrounds[bgKey]})`;
+                
             }
-
+            div.style.color = '#fff'
             div.innerHTML = `
                 <button 
                     onclick="toggleItemInfo(${index})"
@@ -252,7 +254,7 @@ function renderDownloads() {
                 </button>
 
                 <button onclick="upgradeItem(${index})">
-                    <img src="${actionIcons.levelup}" class="inline-icon small">$${getUpgradeCost(index, item.level)}
+                    <img src="${actionIcons.levelup}" class="inline-icon small">$${getItemUpgradeCost(index, item.level)}
                 </button>
 
                 <div id="info-${index}" 
@@ -396,7 +398,7 @@ function renderUpgrades() {
         div.className = 'upgrade';
         div.innerHTML = `
             <p>Upgrade Storage to <img src="${getStorageIcon(currentStorageIndex + 1)}" class="inline-icon large"> ${nextStorage.name} (${formatSizeFromMB(nextStorage.capacity)})</p>
-            <button onclick="upgradeStorage()">${getStorageCost(currentStorageIndex)} <img src="${actionIcons.sell}" class="inline-icon large"></button>
+            <button onclick="upgradeStorage()">${getStorageCost(currentStorageIndex + 1)} <img src="${actionIcons.sell}" class="inline-icon large"></button>
         `;
         upgradesDiv.appendChild(div);
     }
@@ -592,7 +594,7 @@ function formatDisk() {
 }
 
 function getPrinterUpgradeCost() {
-    return Math.floor(250 * Math.pow(2, printerUpgradeLevel));
+    return Math.floor(250 * Math.pow(2.3, printerUpgradeLevel));
 }
 
 function buyPrinterUpgrade() {
@@ -646,7 +648,7 @@ function getDoublePrintChance() {
 }
 
 function getDoublePrintUpgradeCost() {
-    return Math.floor(2000 * Math.pow(2, doublePrintUpgrades));
+    return Math.floor(2000 * Math.pow(2.2, doublePrintUpgrades));
 }
 
 function buyDoublePrintUpgrade() {
@@ -764,16 +766,7 @@ function sellItem(index) {
 
 function upgradeItem(index) {
     const item = items[index];
-
-    function getUpgradeCost(index, level) {
-        const baseCost = 1;
-        const itemTierScale = Math.pow(3, index);
-        const levelScale = Math.pow(1.4, level - 1);
-
-        return Math.floor(baseCost * itemTierScale * levelScale);
-    }
-
-    const cost = getUpgradeCost(index, item.level);
+    const cost = getItemUpgradeCost(index, item.level);
 
     if (money >= cost) {
         money -= cost;
@@ -810,8 +803,13 @@ function upgradeInternet() {
 
 function upgradeStorage() {
     const next = storageTypes[currentStorageIndex + 1];
-    if (next && money >= 10) {
-        money -= 10;
+    if (!next) {
+        alert('No further storage upgrades available.');
+        return;
+    }
+    const cost = getStorageCost(currentStorageIndex + 1);
+    if (money >= cost) {
+        money -= cost;
         currentStorageIndex++;
         storageType = next.name;
         storageCapacity = next.capacity;
