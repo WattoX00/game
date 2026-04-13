@@ -1,4 +1,4 @@
-let money = 1000000000;
+let money = 0;
 let storageCapacity = 1.44;
 let storageUsed = 0;
 let internetSpeed = 0.02;
